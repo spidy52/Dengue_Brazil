@@ -1,0 +1,23 @@
+# Ignore raw large dataset (617MB)
+final_brazil_dengue.csv
+
+# Ignore large output CSV files (keep data folder coords/geojson)
+*.csv
+!data/*.csv
+!data/*.geojson
+
+# Ignore trained model binaries
+*.joblib
+climate/models/
+dengue/models/
+
+# Ignore compiled python cache
+__pycache__/
+*.pyc
+
+# Ignore large generated HTML maps (>50MB each)
+*.html
+
+# Ignore OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,8 @@
+lightgbm
+numpy
+pandas
+matplotlib
+plotly
+joblib
+scikit-learn
+kaleido==0.2.1
