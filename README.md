@@ -8,14 +8,14 @@ A production-grade, memory-optimized end-to-end forecasting pipeline that predic
 
 Here are the forecast curves showing the historical context (2020–2024) and the calibrated forecast (2025–2029) with realistic seasonality, winter low seasons, and organic wiggles:
 
-### Climate Zone 6
-![Zone 6 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_6.png)
+### Climate Zone 1
+![Zone 1 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_1.png)
 
-### Climate Zone 5
-![Zone 5 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_5.png)
+### Climate Zone 2
+![Zone 2 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_2.png)
 
-### Climate Zone 4
-![Zone 4 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_4.png)
+### Climate Zone 3
+![Zone 3 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_3.png)
 
 ---
 
@@ -23,14 +23,14 @@ Here are the forecast curves showing the historical context (2020–2024) and th
 
 Here are the forecast curves for the shorter-term 2-year forecast (upto 2027) with the same calibrated seasonality and organic wiggles:
 
-### Climate Zone 6 (2-Year)
-![Zone 6 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_6.png)
+### Climate Zone 1 (2-Year)
+![Zone 1 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_1.png)
 
-### Climate Zone 5 (2-Year)
-![Zone 5 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_5.png)
+### Climate Zone 2 (2-Year)
+![Zone 2 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_2.png)
 
-### Climate Zone 4 (2-Year)
-![Zone 4 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_4.png)
+### Climate Zone 3 (2-Year)
+![Zone 3 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_3.png)
 
 ---
 
