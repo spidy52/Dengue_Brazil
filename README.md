@@ -1,6 +1,20 @@
 # Dengue Brazil: Climate & Epidemiological Forecasting
 
 A production-grade, memory-optimized end-to-end forecasting pipeline that predicts municipality-wise climate and dengue incidence rates across Brazil.
+---
+
+## 📈 Calibrated 2-Year Dengue Forecast Curves (2025–2026)
+
+Here are the forecast curves for the shorter-term 2-year forecast (upto 2027) with the same calibrated seasonality and organic wiggles:
+
+### Climate Zone 1 (2-Year)
+![Zone 1 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_1.png)
+
+### Climate Zone 2 (2-Year)
+![Zone 2 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_2.png)
+
+### Climate Zone 3 (2-Year)
+![Zone 3 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_3.png)
 
 ---
 
@@ -17,20 +31,6 @@ Here are the forecast curves showing the historical context (2020–2024) and th
 ### Climate Zone 3
 ![Zone 3 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_3.png)
 
----
-
-## 📈 Calibrated 2-Year Dengue Forecast Curves (2025–2026)
-
-Here are the forecast curves for the shorter-term 2-year forecast (upto 2027) with the same calibrated seasonality and organic wiggles:
-
-### Climate Zone 1 (2-Year)
-![Zone 1 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_1.png)
-
-### Climate Zone 2 (2-Year)
-![Zone 2 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_2.png)
-
-### Climate Zone 3 (2-Year)
-![Zone 3 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_3.png)
 
 ---
 
