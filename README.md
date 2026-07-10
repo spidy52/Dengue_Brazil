@@ -19,6 +19,21 @@ Here are the forecast curves showing the historical context (2020–2024) and th
 
 ---
 
+## 📈 Calibrated 2-Year Dengue Forecast Curves (2025–2026)
+
+Here are the forecast curves for the shorter-term 2-year forecast (upto 2027) with the same calibrated seasonality and organic wiggles:
+
+### Climate Zone 6 (2-Year)
+![Zone 6 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_6.png)
+
+### Climate Zone 5 (2-Year)
+![Zone 5 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_5.png)
+
+### Climate Zone 4 (2-Year)
+![Zone 4 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_4.png)
+
+---
+
 ## 📂 Project Structure
 
 ```
