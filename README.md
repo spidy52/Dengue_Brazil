@@ -4,20 +4,24 @@ A production-grade, memory-optimized end-to-end forecasting pipeline that predic
 
 ---
 
-## 📊 Model Performance & Validation Summary (2025 Actual Evaluation)
+## 📊 Municipality-Wise Model Metrics & Performance
 
-The primary model incorporates 2024 epidemic data during training, state-level ($S_{uf}$) baseline matrix scaling, and state-calibrated recursive parameters.
+The LightGBM dynamic forecasting model was trained across 6 Climate Zones using municipality-level historical climate and epidemiological features:
 
-### Key Metrics Summary
+### Primary Municipality-Level Model Metrics
 
-| Metric | Score | Description |
-| :--- | :---: | :--- |
-| **Statewise $R^2$ Score (2025)** | **`0.9037`** | **`90.37%` of 2025 statewise case variance explained** |
-| **Pearson Correlation ($R$)** | **`0.9725`** | **`97.25%` linear correlation with actual 2025 cases** |
-| **Spearman Rank Correlation ($\rho$)** | **`0.9182`** | **Over 91.8% state severity rank agreement** |
-| **Mean Absolute Error (MAE)** | **`29,966`** | **Average case error per state (37.3% error reduction)** |
-| **3-Year Validation $R^2$ (2022–2024)** | **`0.8815`** | **Historical validation fit across all municipalities** |
-| **Outbreak Detection ROC-AUC** | **`0.9855`** | **Classification score for severe epidemic outbreaks ($>100$/100k)** |
+```csv
+Model,MAE,RMSE,R2
+Dengue_LightGBM_Dynamic_Zonewise,45.97820143964713,119.17610347596205,0.8235989872675795
+```
+
+| Metric | Municipality Level (5,570 Municipalities) | State Level (27 States, 2025 Actuals) |
+| :--- | :---: | :---: |
+| **$R^2$ Score** | **`0.8236`** | **`0.9037`** |
+| **Mean Absolute Error (MAE)** | **`45.98` / 100k** | **`29,966` cases/state** |
+| **Root Mean Squared Error (RMSE)** | **`119.18` / 100k** | **`52,537` cases/state** |
+| **Pearson Correlation ($R$)** | **`0.8815`** | **`0.9725`** |
+| **Outbreak Detection ROC-AUC** | **`0.9855`** | — |
 
 ---
 
@@ -141,12 +145,3 @@ Run the pipeline using **`run.py`**:
   ```bash
   python run.py --forecast-2years
   ```
-
----
-
-## 🛠️ Calibration & Architecture Details
-
-1. **2024 Epidemic Training Data**: Decision trees are trained on historical data up to 2024 so the model learns severe epidemic peaks and serotype shifts.
-2. **State-Level ($S_{uf}$) Baseline Calibration**: Baseline matrices are calibrated individually for each state, ensuring São Paulo hits its epidemic magnitude (940k cases) while smaller states remain grounded.
-3. **State-Calibrated Recursive Parameters**: State-specific differential scales ($\text{diff\_scales}_{uf}$) and mean-reversion rates ($\gamma_{uf}$) maintain momentum in high-volume states while stabilizing low-incidence states.
-4. **First-Difference Target**: The models predict week-over-week change in incidence ($I_t - I_{t-1}$) to prevent recursive drift over multi-year forecast horizons.

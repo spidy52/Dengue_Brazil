@@ -1,12 +1,8 @@
 # Ignore raw large dataset (617MB)
 final_brazil_dengue.csv
 
-# Ignore large output CSV files (keep data folder coords/geojson and summary metrics)
+# Ignore all CSV files
 *.csv
-!data/*.csv
-!data/*.geojson
-!final/outputs/metrics/*.csv
-!final/outputs/csv/statewise_2025_improved_comparison.csv
 
 # Ignore trained model binaries
 *.joblib
