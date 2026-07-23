@@ -1,10 +1,10 @@
 import os
 import gc
 import warnings
+import datetime
 import joblib
 import numpy as np
 import pandas as pd
-from datetime import datetime
 
 warnings.filterwarnings("ignore")
 
@@ -24,14 +24,13 @@ DYNAMIC_FEATURES = [
 ]
 
 def get_epiweek_from_sunday(dt):
-    import datetime as dt_mod
     year = dt.year
     def get_epiweek_1_sunday(y):
-        first_jan = dt_mod.date(y, 1, 1)
+        first_jan = datetime.date(y, 1, 1)
         first_jan_wd = first_jan.weekday()
         days_to_wed = (2 - first_jan_wd) % 7
-        first_wed = first_jan + dt_mod.timedelta(days=days_to_wed)
-        epiweek_1_sun = first_wed - dt_mod.timedelta(days=3)
+        first_wed = first_jan + datetime.timedelta(days=days_to_wed)
+        epiweek_1_sun = first_wed - datetime.timedelta(days=3)
         return pd.Timestamp(epiweek_1_sun)
     sun_this_year = get_epiweek_1_sunday(year)
     if dt >= sun_this_year:
@@ -49,20 +48,46 @@ def get_epiweek_from_sunday(dt):
     return epi_year, week_num
 
 def predict_dengue_2years():
-    print("Starting Dengue Forecasting for 2 Years (upto 2027)...")
-    
-    # Paths
+    print("Starting Fine-Tuned 2-Year Improved Dengue Forecasting (2025-2026)...")
+
     hist_csv = "final_brazil_dengue.csv"
     if not os.path.exists(hist_csv):
         hist_csv = os.path.join("data", "final_brazil_dengue.csv")
+
     climate_forecast_csv = "final/outputs/csv/municipality_climate_2025_2029.csv"
-    
-    # Load history
-    print("Loading historical data for cache initialization...")
-    hist_df = pd.read_csv(hist_csv, usecols=["date", "year", "epiweek", "geocode", "uf", "climate_zone", "population", "cases", "incidence_rate", "temp_med", "precip_tot"])
+    if not os.path.exists(climate_forecast_csv):
+        climate_forecast_csv = "climate/outputs/municipality_climate_2024_2029_full.csv"
+
+    models = {}
+    for zone in range(1, 7):
+        m_path = f"dengue/models/dengue_model_zone_{zone}.joblib"
+        if not os.path.exists(m_path):
+            raise FileNotFoundError(f"Improved Zone {zone} model missing at {m_path}. Train model first.")
+        models[float(zone)] = joblib.load(m_path)
+
+    residual_path = "dengue/models/residual_info.joblib"
+    residual_info = joblib.load(residual_path) if os.path.exists(residual_path) else None
+    if residual_info:
+        week_residual_std = residual_info["week_std"]
+        global_residual_std = residual_info["global_std"]
+    else:
+        week_residual_std = {}
+        global_residual_std = 5.0
+
+    noise_std_by_week = np.array([
+        week_residual_std.get(w, global_residual_std) for w in range(1, 54)
+    ], dtype=np.float32)
+
+    rng = np.random.default_rng(seed=42)
+
+    print("Loading historical data...")
+    hist_df = pd.read_csv(hist_csv, usecols=[
+        "date", "geocode", "uf", "climate_zone", "population",
+        "incidence_rate", "cases", "temp_med", "precip_tot", "rel_humid_med", "epiweek"
+    ])
     hist_df = hist_df.drop_duplicates(subset=["date", "geocode"]).sort_values(["geocode", "date"]).reset_index(drop=True)
     hist_df["date"] = pd.to_datetime(hist_df["date"])
-    
+
     geocodes = sorted(hist_df["geocode"].unique())
     num_muns = len(geocodes)
     pop_series = hist_df.groupby("geocode")["population"].last()
@@ -75,16 +100,15 @@ def predict_dengue_2years():
         .to_dict()
     )
 
-    # Load climate predictions and filter for 2 years (upto end of 2026)
-    print("Loading predicted climate variables...")
+    print("Loading predicted climate variables (filtered for 2025-2026)...")
     clim_pred = pd.read_csv(climate_forecast_csv)
     clim_pred["date"] = pd.to_datetime(clim_pred["date"])
-    clim_pred = clim_pred[clim_pred["date"] <= "2026-12-31"] # Filter for 2 years
+    clim_pred = clim_pred[clim_pred["date"] <= "2026-12-31"] # Filter for 2 Years
     clim_pred = clim_pred.sort_values(["geocode", "date"]).reset_index(drop=True)
 
     forecast_dates = sorted(clim_pred["date"].unique())
     num_weeks = len(forecast_dates)
-    print(f"Number of forecast weeks: {num_weeks} (from {forecast_dates[0].strftime('%Y-%m-%d')} to {forecast_dates[-1].strftime('%Y-%m-%d')})")
+    print(f"Number of 2-year forecast weeks: {num_weeks}")
 
     week_seq = []
     forecast_years = []
@@ -96,9 +120,9 @@ def predict_dengue_2years():
         forecast_weeks.append(min(53, max(1, epi_wk)))
 
     meta_df = hist_df[["geocode", "uf", "climate_zone"]].drop_duplicates(subset=["geocode"]).set_index("geocode").reindex(geocodes)
+    ufs = meta_df["uf"].values
+    climate_zones = meta_df["climate_zone"].values
 
-    # Compute historical baselines
-    print("Computing historical weekly baselines for temperature and precipitation...")
     df_hist = hist_df.copy()
     df_hist["week"] = (df_hist["epiweek"] % 100).astype(np.int16)
     df_train_dengue = df_hist[(df_hist["date"].dt.year >= 2022) & (df_hist["date"].dt.year <= 2024)]
@@ -116,16 +140,24 @@ def predict_dengue_2years():
 
     hist_mean_matrix = make_baseline_matrix(df_train_dengue, geocodes, "incidence_rate")
     
-    # Map scale factors
-    climate_zones = meta_df["climate_zone"].values
-    
+    uf_baseline_scales = {
+        'SP': 2.70, 'MG': 1.15, 'PR': 1.25, 'GO': 1.30, 'RS': 1.65,
+        'MT': 1.10, 'ES': 1.10, 'BA': 1.10, 'RJ': 1.05, 'SC': 1.15,
+        'PE': 0.90, 'PA': 1.10, 'MS': 0.65, 'DF': 0.60, 'RN': 0.60,
+        'PI': 0.60, 'AC': 0.65, 'AL': 0.60, 'PB': 0.60, 'CE': 0.50,
+        'MA': 0.80, 'AM': 1.00, 'TO': 0.50, 'AP': 0.80, 'RO': 0.50,
+        'SE': 0.50, 'RR': 0.80
+    }
+
+    base_scales_uf = np.array([uf_baseline_scales.get(u, 1.0) for u in ufs], dtype=np.float32)
+    hist_mean_matrix = hist_mean_matrix * base_scales_uf[:, np.newaxis]
+
     hist_temp_matrix = make_baseline_matrix(df_train_climate, geocodes, "temp_med")
     hist_precip_matrix = make_baseline_matrix(df_train_climate, geocodes, "precip_tot")
 
     del df_hist, df_train_dengue, df_train_climate
     gc.collect()
 
-    # Initialize 104-week history caches
     last_104_dates = sorted(hist_df["date"].unique())[-104:]
     last_8_dates = sorted(hist_df["date"].unique())[-8:]
 
@@ -148,8 +180,6 @@ def predict_dengue_2years():
             .ffill(axis=1).bfill(axis=1).reindex(geocodes).values.astype(np.float32)
         )
 
-    # Reconstruct forecasted climate
-    print("Performing residual anomaly downscaling on forecasted climate variables...")
     hist_cols = hist_df.pivot(index="geocode", columns="date", values="temp_med").columns
     
     forecast_to_hist_map = {}
@@ -161,7 +191,6 @@ def predict_dengue_2years():
     mapped_cols = [forecast_to_hist_map[dt] for dt in forecast_dates]
     mapped_weeks = [min(53, max(1, get_epiweek_from_sunday(dt)[1])) for dt in mapped_cols]
     
-    clim_pred_dates = sorted(clim_pred["date"].unique())
     forecast_dates_str = [dt.strftime("%Y-%m-%d") for dt in forecast_dates]
     
     forecast_climate = {}
@@ -189,61 +218,40 @@ def predict_dengue_2years():
     for var in ["temp_med", "precip_tot"]:
         clim_matrix[var] = np.concatenate([hist_climate[var], forecast_climate[var]], axis=1)
 
-    # Full history matrices
     history_inc = np.zeros((num_muns, 104 + num_weeks), dtype=np.float32)
     history_inc[:, :104] = hist_inc_pivot
     history_cases = np.zeros((num_muns, 104 + num_weeks), dtype=np.float32)
     history_cases[:, :104] = hist_cases_pivot
 
-    # Load zone-wise models (exactly same as predict_dengue.py)
-    models = {}
-    for zone in range(1, 7):
-        m_path = f"dengue/models/dengue_model_zone_{zone}.joblib"
-        models[float(zone)] = joblib.load(m_path)
-
-    residual_path = "dengue/models/residual_info.joblib"
-    residual_info = joblib.load(residual_path) if os.path.exists(residual_path) else None
-    if residual_info:
-        week_residual_std = residual_info["week_std"]
-        global_residual_std = residual_info["global_std"]
-    else:
-        week_residual_std = {}
-        global_residual_std = 5.0
-    noise_std_by_week = np.array([
-        week_residual_std.get(w, global_residual_std) for w in range(1, 54)
-    ], dtype=np.float32)
-
-    zone_diff_scales = {
-        1.0: 0.45, 2.0: 0.45, 3.0: 0.45,
-        4.0: 1.0,  5.0: 1.2,  6.0: 1.2
-    }
-    
-    zone_gammas = {
-        1.0: 0.02, 2.0: 0.02, 3.0: 0.02,
-        4.0: 0.02, 5.0: 0.02, 6.0: 0.02
+    diff_scales_uf_map = {
+        'SP': 1.10, 'MG': 0.50, 'PR': 0.50, 'GO': 0.55, 'RS': 0.50,
+        'MT': 0.45, 'ES': 0.45, 'BA': 0.35, 'RJ': 0.30, 'SC': 0.35,
+        'PE': 0.45, 'PA': 0.45, 'MS': 0.40, 'DF': 0.20, 'RN': 0.35,
+        'PI': 0.35, 'AC': 0.40, 'AL': 0.35, 'PB': 0.35, 'CE': 0.20,
+        'MA': 0.30, 'AM': 0.45, 'TO': 0.25, 'AP': 0.40, 'RO': 0.25,
+        'SE': 0.20, 'RR': 0.35
     }
 
-    zone_growth = {
-        1.0: 0.0,  2.0: 0.0,  3.0: 0.0,
-        4.0: 0.02, 5.0: 0.02, 6.0: 0.03
+    gammas_uf_map = {
+        'SP': 0.012, 'MG': 0.025, 'PR': 0.025, 'GO': 0.025, 'RS': 0.025,
+        'MT': 0.025, 'ES': 0.025, 'BA': 0.03, 'RJ': 0.035, 'SC': 0.035,
+        'PE': 0.025, 'PA': 0.025, 'MS': 0.03, 'DF': 0.045, 'RN': 0.03,
+        'PI': 0.03, 'AC': 0.025, 'AL': 0.03, 'PB': 0.03, 'CE': 0.045,
+        'MA': 0.035, 'AM': 0.025, 'TO': 0.045, 'AP': 0.03, 'RO': 0.045,
+        'SE': 0.045, 'RR': 0.03
     }
-    
-    diff_scales = np.array([zone_diff_scales.get(z, 0.45) for z in climate_zones], dtype=np.float32)
-    gammas = np.array([zone_gammas.get(z, 0.08) for z in climate_zones], dtype=np.float32)
-    growth_rates = np.array([zone_growth.get(z, 0.0) for z in climate_zones], dtype=np.float32)
+
+    diff_scales = np.array([diff_scales_uf_map.get(u, 0.45) for u in ufs], dtype=np.float32)
+    gammas = np.array([gammas_uf_map.get(u, 0.025) for u in ufs], dtype=np.float32)
 
     X_t = np.zeros((num_muns, 12), dtype=np.float32)
-    rng = np.random.default_rng(42)
 
-    print("\nRunning recursive dengue forecasting loop with stochastic noise...")
+    print("Running fine-tuned 2-year recursive dengue forecasting loop...")
+
     for t in range(num_weeks):
         wk = week_seq[t]
-        
-        years_passed = t / 52.0
-        growth_multiplier = (1.0 + growth_rates) ** years_passed
-        baseline = hist_mean_matrix[:, wk - 1] * growth_multiplier
+        baseline = hist_mean_matrix[:, wk - 1]
 
-        # Build feature vector
         X_t[:, 0] = baseline
         X_t[:, 1] = m_pops
         X_t[:, 2] = history_inc[:, 104 + t - 1]
@@ -263,7 +271,6 @@ def predict_dengue_2years():
 
         X_t_clean = np.nan_to_num(X_t, nan=0.0, posinf=0.0, neginf=0.0)
 
-        # Zone-wise model prediction
         preds_diff = np.zeros(num_muns, dtype=np.float32)
         for zone in range(1, 7):
             zone_mask = climate_zones == float(zone)
@@ -277,14 +284,9 @@ def predict_dengue_2years():
         preds = history_inc[:, 104 + t - 1] + diff_scales * (preds_diff * suit + spark) - gammas * dev
 
         noise_std = noise_std_by_week[wk - 1]
-        local_noise = rng.normal(loc=0.0, scale=0.20 * noise_std, size=num_muns).astype(np.float32)
+        local_noise = rng.normal(loc=0.0, scale=0.10 * noise_std, size=num_muns).astype(np.float32)
         
-        unique_zones = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
-        zone_noise_vals = rng.normal(loc=0.0, scale=0.8, size=len(unique_zones)).astype(np.float32)
-        zone_noise_map = {z: val for z, val in zip(unique_zones, zone_noise_vals)}
-        zone_noise = np.array([zone_noise_map.get(z, 0.0) for z in climate_zones], dtype=np.float32)
-        
-        preds = preds + local_noise + zone_noise
+        preds = preds + local_noise
         preds = np.clip(preds, 0.01 * baseline, None)
 
         history_inc[:, 104 + t] = preds
@@ -293,7 +295,6 @@ def predict_dengue_2years():
     dengue_inc_forecast = history_inc[:, 104:]
     dengue_cases_forecast = history_cases[:, 104:]
 
-    print("\nAssembling forecast dataframe...")
     week_dfs = []
     for t in range(num_weeks):
         wk_df = pd.DataFrame(index=geocodes)
@@ -309,17 +310,13 @@ def predict_dengue_2years():
         week_dfs.append(wk_df)
 
     forecast_df = pd.concat(week_dfs, ignore_index=True)
-    forecast_2years = forecast_df.reset_index(drop=True)
+    forecast_improved_2years = forecast_df.reset_index(drop=True)
 
-    # Create separate output folder
     os.makedirs("final/outputs_2years/csv", exist_ok=True)
-    
     m_out = "final/outputs_2years/csv/municipality_dengue_2025_2026.csv"
-    forecast_2years.to_csv(m_out, index=False)
-    print(f"Saved 2-year municipality dengue forecasts to {m_out}")
+    forecast_improved_2years.to_csv(m_out, index=False)
+    print(f"Saved fine-tuned 2-year municipality dengue forecasts to {m_out}")
 
-    # Zone aggregation
-    print("\nAggregating predictions into Climate Zones...")
     def aggregate_zones(group):
         date_val = group["date"].iloc[0]
         year_val = group["year"].iloc[0]
@@ -337,11 +334,10 @@ def predict_dengue_2years():
             })
         return pd.DataFrame(records)
 
-    zone_df = forecast_2years.groupby("date", group_keys=False).apply(aggregate_zones).reset_index(drop=True)
-
+    zone_df = forecast_improved_2years.groupby("date", group_keys=False).apply(aggregate_zones).reset_index(drop=True)
     z_out = "final/outputs_2years/csv/zone_dengue_2025_2026.csv"
     zone_df.to_csv(z_out, index=False)
-    print(f"Saved 2-year zone-level dengue forecasts to {z_out}")
+    print(f"Saved fine-tuned 2-year zone dengue forecasts to {z_out}")
 
 if __name__ == "__main__":
     predict_dengue_2years()
