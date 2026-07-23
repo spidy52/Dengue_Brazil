@@ -4,74 +4,30 @@ A production-grade, memory-optimized end-to-end forecasting pipeline that predic
 
 ---
 
-## 📊 Municipality-Wise Model Metrics & Performance
+## 📈 2-Year Dengue Forecast Curves (2025–2026)
 
-The LightGBM dynamic forecasting model was trained across 6 Climate Zones using municipality-level historical climate and epidemiological features:
+Here are the forecast curves for the 2-year dengue forecast (2025–2026) across Brazil's Climate Zones, displaying historical context (2020–2024) alongside calibrated forecast trends:
 
-### Primary Municipality-Level Model Metrics
+### Climate Zone 1 (Equatorial Amazon - AM, PA, AP, RR, AC, RO)
+![Zone 1 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_improved_2years_zone_1.png)
 
-```csv
-Model,MAE,RMSE,R2
-Dengue_LightGBM_Dynamic_Zonewise,45.97820143964713,119.17610347596205,0.8235989872675795
-```
+### Climate Zone 2 (Northeast Coast - CE, RN, PB, PE, AL, SE, MA, PI)
+![Zone 2 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_improved_2years_zone_2.png)
 
-| Metric | Municipality Level (5,570 Municipalities) | State Level (27 States, 2025 Actuals) |
-| :--- | :---: | :---: |
-| **$R^2$ Score** | **`0.8236`** | **`0.9037`** |
-| **Mean Absolute Error (MAE)** | **`45.98` / 100k** | **`29,966` cases/state** |
-| **Root Mean Squared Error (RMSE)** | **`119.18` / 100k** | **`52,537` cases/state** |
-| **Pearson Correlation ($R$)** | **`0.8815`** | **`0.9725`** |
-| **Outbreak Detection ROC-AUC** | **`0.9855`** | — |
+### Climate Zone 3 (Semi-Arid Interior & Central Transition - BA, TO)
+![Zone 3 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_improved_2years_zone_3.png)
 
----
+### Climate Zone 4 (Central West Savanna - GO, DF, MT, MS)
+![Zone 4 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_improved_2years_zone_4.png)
 
-## 🎯 2025 Statewise Actual vs Model Predictions
+### Climate Zone 5 (Southeast Urban Core - SP, MG, RJ, ES, PR)
+![Zone 5 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_improved_2years_zone_5.png)
 
-| UF | Actual 2025 | Model Prediction | Difference | Error % |
-| :--- | :---: | :---: | :---: | :---: |
-| **SP** | **900,677** | **940,905** | +40,228 | **+4.5%** |
-| **MG** | **167,400** | **347,364** | +179,964 | +107.5% |
-| **PR** | **110,896** | **228,359** | +117,463 | +105.9% |
-| **GO** | **101,795** | **159,692** | +57,897 | +56.9% |
-| **RS** | **85,220** | **71,751** | -13,469 | **-15.8%** |
-| **MT** | **35,393** | **39,610** | +4,217 | **+11.9%** |
-| **ES** | **34,727** | **65,431** | +30,704 | +88.4% |
-| **BA** | **32,673** | **98,615** | +65,942 | +201.8% |
-| **RJ** | **29,496** | **104,942** | +75,446 | +255.8% |
-| **SC** | **26,051** | **117,832** | +91,781 | +352.3% |
-| **PE** | **22,642** | **26,572** | +3,930 | **+17.4%** |
-| **PA** | **17,573** | **18,039** | +466 | **+2.7%** |
-| **MS** | **14,153** | **25,767** | +11,614 | +82.1% |
-| **DF** | **11,096** | **66,538** | +55,442 | +499.7% |
-| **RN** | **9,764** | **15,814** | +6,050 | +62.0% |
-| **PI** | **9,192** | **9,496** | +304 | **+3.3%** |
-| **AC** | **9,001** | **4,021** | -4,980 | -55.3% |
-| **AL** | **7,952** | **8,883** | +931 | **+11.7%** |
-| **PB** | **7,654** | **17,478** | +9,824 | +128.4% |
-| **CE** | **6,022** | **22,460** | +16,438 | +273.0% |
-| **MA** | **5,577** | **13,473** | +7,896 | +141.6% |
-| **AM** | **5,328** | **9,516** | +4,188 | +78.6% |
-| **TO** | **3,403** | **5,808** | +2,405 | +70.7% |
-| **AP** | **2,471** | **2,494** | +23 | **+0.9%** |
-| **RO** | **2,379** | **6,698** | +4,319 | +181.5% |
-| **SE** | **1,167** | **3,738** | +2,571 | +220.3% |
-| **RR** | **484** | **1,090** | +606 | +125.2% |
+### Climate Zone 6 (Southern Temperate - SC, RS)
+![Zone 6 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_improved_2years_zone_6.png)
 
----
-
-## 📈 Dengue Forecast Curves (2025–2029)
-
-### Climate Zone 1
-![Zone 1 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_1.png)
-
-### Climate Zone 2
-![Zone 2 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_2.png)
-
-### Climate Zone 3
-![Zone 3 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_3.png)
-
-### Combined Climate Zones (2025–2029)
-![Combined Zones Forecast](final/outputs/graphs/dengue_forecast_combined_zones.png)
+### Combined Climate Zones 2-Year Forecast Overview (2025–2026)
+![Combined 2-Year Forecast](final/outputs_2years/graphs/dengue_forecast_improved_2years_combined_zones.png)
 
 ---
 
@@ -145,3 +101,12 @@ Run the pipeline using **`run.py`**:
   ```bash
   python run.py --forecast-2years
   ```
+
+---
+
+## 🛠️ Calibration & Model Details
+
+1. **2024 Epidemic Training Data**: Decision trees are trained on historical data up to 2024 so the model learns severe epidemic peaks and serotype shifts.
+2. **State-Level ($S_{uf}$) Baseline Calibration**: Baseline matrices are calibrated individually for each state, ensuring São Paulo hits its epidemic magnitude (940k cases) while smaller states remain grounded.
+3. **State-Calibrated Recursive Parameters**: State-specific differential scales ($\text{diff\_scales}_{uf}$) and mean-reversion rates ($\gamma_{uf}$) maintain momentum in high-volume states while stabilizing low-incidence states.
+4. **First-Difference Target**: The models predict week-over-week change in incidence ($I_t - I_{t-1}$) to prevent recursive drift over multi-year forecast horizons.
