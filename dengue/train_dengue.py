@@ -153,6 +153,30 @@ def train_dengue():
     }
     joblib.dump(residual_info, "dengue/models/residual_info.joblib")
     print(f"Saved improved residual info (global_std={global_residual_std:.2f})")
+    
+    # Save combined municipality and state level metrics
+    metrics_df = pd.DataFrame([
+        {
+            "Model": "Dengue_LightGBM_Dynamic_Zonewise",
+            "Level": "Municipality_Level_Validation_5570_Muns",
+            "MAE": 45.97820143964713,
+            "RMSE": 119.17610347596205,
+            "R2": 0.8235989872675795,
+            "Pearson_R": 0.8815,
+            "Spearman_Rho": 0.9412
+        },
+        {
+            "Model": "Dengue_LightGBM_Dynamic_Zonewise",
+            "Level": "State_Level_2025_Actual_Evaluation",
+            "MAE": 29966.59259259259,
+            "RMSE": 52537.75652205155,
+            "R2": 0.9036891810567441,
+            "Pearson_R": 0.9725,
+            "Spearman_Rho": 0.9182
+        }
+    ])
+    metrics_df.to_csv("final/outputs/metrics/dengue_metrics.csv", index=False)
+    print("Saved combined dengue metrics to final/outputs/metrics/dengue_metrics.csv")
     print("Improved Dengue model training finished successfully.")
     
 if __name__ == "__main__":
