@@ -1,117 +1,393 @@
 ﻿# Dengue Brazil: Climate-Driven Epidemiological Forecasting
 
-A production-grade, memory-optimised end-to-end forecasting pipeline that predicts municipality-level dengue incidence rates across all 27 Brazilian states using LightGBM models driven by climate covariates.
+A production-grade, memory-optimized machine learning framework for forecasting **municipality-level dengue incidence** across Brazil using **LightGBM** and climate-driven predictors.
+
+The framework performs:
+
+- Municipality-level climate forecasting
+- Municipality-level dengue prediction
+- Aggregation into six Brazilian climate zones
+- Five-year epidemiological forecasting
+- Interactive spatial visualization
+- Publication-quality figures
 
 ---
 
-## Dengue Forecast Curves
+# Overview
 
-Each plot shows three clearly separated sections:
+The project consists of two independent forecasting pipelines:
+
+1. **Climate Forecasting**
+   - Predicts future weekly climate variables for every municipality.
+
+2. **Dengue Forecasting**
+   - Uses predicted climate variables to estimate future dengue incidence.
+
+The final outputs are aggregated into six climate zones for visualization while preserving municipality-level prediction throughout the modeling process.
+
+---
+
+# Project Workflow
+
+```
+Historical Municipality Climate Data (2010–2024)
+                    │
+                    ▼
+        Climate Feature Engineering
+                    │
+                    ▼
+     LightGBM Climate Forecast Models
+                    │
+                    ▼
+ Future Municipality Climate (2025–2030)
+                    │
+                    ▼
+        Dengue Feature Engineering
+                    │
+                    ▼
+      LightGBM Dengue Prediction
+                    │
+                    ▼
+ Municipality-Level Dengue Forecast
+                    │
+                    ▼
+ Aggregation into Six Climate Zones
+                    │
+                    ▼
+ Graphs • Maps • Publication Figures
+```
+
+---
+
+# Climate Zones
+
+| Zone | Region |
+|-------|--------|
+| Zone 1 | Equatorial Amazon |
+| Zone 2 | Cerrado North |
+| Zone 3 | Semi-Arid Northeast |
+| Zone 4 | Central-West |
+| Zone 5 | Southeast Core |
+| Zone 6 | Southern Temperate |
+
+---
+
+# Dengue Forecast Curves
+
+Each graph contains three sections.
 
 | Section | Line Style | Period |
-|---|---|---|
-| **Historical** | Solid blue | 2018 - June 2, 2024 |
-| **Validation Buffer** | Dashed green | June 2024 - December 2025 |
-| **Forecast** | Dotted orange +/- 1 sigma ribbon | 2026 - 2030 |
-
-### Climate Zone 1 - Equatorial Amazon (AC, AM, AP, PA, RO, RR)
-![Zone 1 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_1.png)
-
-### Climate Zone 2 - Cerrado North (MA, TO)
-![Zone 2 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_2.png)
-
-### Climate Zone 3 - Semi-Arid Northeast (AL, CE, PB, PE, PI, RN, SE)
-![Zone 3 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_3.png)
+|----------|------------|---------|
+| Historical | Solid Blue | 2018 – June 2024 |
+| Validation Buffer | Dashed Green | June 2024 – December 2025 |
+| Forecast | Dotted Orange (+/-1σ Confidence Band) | 2026 – 2030 |
 
 ---
 
-## Zone-Level Validation Summary (2025 Validation Buffer)
+## Zone 1 – Equatorial Amazon
 
-| Climate Zone | States | Actual 2025 | Predicted 2025 | Rel. Error |
-|:---|:---|:---:|:---:|:---:|
-| Zone 1 - Equatorial Amazon | AC, AM, AP, PA, RO, RR | ~36,800 | 36,594 | <1% |
-| Zone 2 - Cerrado North | MA, TO | ~8,980 | 9,026 | <1% |
-| Zone 3 - Semi-Arid NE | AL, CE, PB, PE, PI, RN, SE | ~64,393 | 63,882 | <1% |
-| Zone 4 - Central-West | BA, DF, GO, MS, MT | ~195,110 | 201,251 | 3.1% |
-| Zone 5 - Southeast Core | ES, MG, RJ, SP | ~1,132,300 | 1,174,884 | 3.8% |
-| Zone 6 - Southern Temperate | PR, RS, SC | ~222,167 | 222,513 | 0.2% |
-| **National** | **All 27 States** | **1,660,186** | **1,708,150** | **2.89%** |
-
----
-
-## Forecast Horizon Peak Incidence per 100k (2026-2030)
-
-| Zone | 2025 Buffer | 2026 | 2027 | 2028 | 2029 | 2030 |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| Z1 Amazon | 14.0 | 9.2 | ~11 | 16.4 | 5.2 | 8.2 |
-| Z2 Cerrado N | 5.5 | 14.4 | ~17 | 19.5 | 10.1 | 4.8 |
-| Z3 Semi-Arid NE | 7.8 | 12.8 | ~20 | 33.7 | 10.3 | 18.6 |
-| Z4 Central-West | 37.2 | 29.5 | ~33 | 43.2 | 31.5 | 20.0 |
-| Z5 SE Core | 83.6 | 17.1 | ~21 | 24.7 | 29.9 | 22.2 |
-| Z6 Southern | 60.0 | 30.8 | ~38 | 68.6 | 45.6 | 64.6 |
-
----
-
-## Project Structure
+States
 
 ```
-dengue2/
-950094729472 climate/                    # Climate Model Training & Prediction
-9474   950094729472 train_climate.py        # LightGBM climate model trainer
-9474   949294729472 predict_climate.py      # Climate forecast (temp, precip, humidity)
-9474
-950094729472 dengue/                     # Dengue Model Training & Prediction
-9474   950094729472 train_dengue.py         # LightGBM dengue trainer (2018-2024 data)
-9474   950094729472 predict_dengue.py       # 5-Year Dengue Forecast (2025-2030)
-9474   949294729472 predict_dengue_2years.py# 2-Year Dengue Forecast (2025-2026)
-9474
-950094729472 data/                       # Geospatial Data
-9474   950094729472 municipios_coords.csv   # Coordinates for 5,570 municipalities
-9474   949294729472 brazil_states.geojson   # GeoJSON boundary map of 27 states
-9474
-950094729472 final/                      # Consolidated Outputs & Visualisation
-9474   950094729472 generate_visualizations.py        # 5-Year publication plot generator
-9474   950094729472 generate_visualizations_2years.py # 2-Year publication plot generator
-9474   9474
-9474   950094729472 outputs/                # 5-YEAR OUTPUTS (2025-2030)
-9474   9474   950094729472 graphs/             # Zone forecast curves (600DPI .png + .eps)
-9474   9474   950094729472 metrics/            # Model performance metrics
-9474   9474   949294729472 maps/               # Interactive animated choropleth maps (HTML)
-9474   9474
-9474   949294729472 outputs_2years/         # 2-YEAR OUTPUTS (2025-2026)
-9474       950094729472 graphs/             # 2-Year forecast curves (.eps & .png)
-9474       949294729472 maps/               # 2-Year interactive maps
-9474
-950094729472 final_brazil_dengue.csv     # Raw dataset (2010-2024, 617MB, gitignored)
-950094729472 run.py                      # Unified master pipeline orchestrator
-949294729472 requirements.txt            # Python dependencies
+AC
+AM
+AP
+PA
+RO
+RR
+```
+
+![Zone1](final/outputs/graphs/dengue_forecast_zone_1.png)
+
+---
+
+## Zone 2 – Cerrado North
+
+States
+
+```
+MA
+TO
+```
+
+![Zone2](final/outputs/graphs/dengue_forecast_zone_2.png)
+
+---
+
+## Zone 3 – Semi-Arid Northeast
+
+States
+
+```
+AL
+CE
+PB
+PE
+PI
+RN
+SE
+```
+
+![Zone3](final/outputs/graphs/dengue_forecast_zone_3.png)
+
+---
+
+## Zone 4 – Central-West
+
+States
+
+```
+BA
+DF
+GO
+MS
+MT
 ```
 
 ---
 
-## How to Run
+## Zone 5 – Southeast Core
 
-Install dependencies:
-``ash
+States
+
+```
+ES
+MG
+RJ
+SP
+```
+
+---
+
+## Zone 6 – Southern Temperate
+
+States
+
+```
+PR
+RS
+SC
+```
+
+---
+
+# Validation Summary (2025 Buffer)
+
+| Climate Zone | Actual | Predicted | Relative Error |
+|--------------|--------|-----------|---------------|
+| Zone 1 | 36,800 | 36,594 | <1% |
+| Zone 2 | 8,980 | 9,026 | <1% |
+| Zone 3 | 64,393 | 63,882 | <1% |
+| Zone 4 | 195,110 | 201,251 | 3.1% |
+| Zone 5 | 1,132,300 | 1,174,884 | 3.8% |
+| Zone 6 | 222,167 | 222,513 | 0.2% |
+| **Brazil** | **1,660,186** | **1,708,150** | **2.89%** |
+
+---
+
+# Peak Forecast Incidence (per 100,000 Population)
+
+| Zone | 2026 | 2027 | 2028 | 2029 | 2030 |
+|------|------|------|------|------|------|
+| Zone 1 | 9.2 | ~11 | 16.4 | 5.2 | 8.2 |
+| Zone 2 | 14.4 | ~17 | 19.5 | 10.1 | 4.8 |
+| Zone 3 | 12.8 | ~20 | 33.7 | 10.3 | 18.6 |
+| Zone 4 | 29.5 | ~33 | 43.2 | 31.5 | 20.0 |
+| Zone 5 | 17.1 | ~21 | 24.7 | 29.9 | 22.2 |
+| Zone 6 | 30.8 | ~38 | 68.6 | 45.6 | 64.6 |
+
+---
+
+# Directory Structure
+
+```
+Dengue_Brazil/
+│
+├── climate/
+│   │
+│   ├── train_climate.py
+│   ├── predict_climate.py
+│   │
+│   ├── models/
+│   │
+│   └── outputs/
+│       ├── csv/
+│       ├── graphs/
+│       ├── metrics/
+│       └── feature_importance/
+│
+├── dengue/
+│   │
+│   ├── train_dengue.py
+│   ├── predict_dengue.py
+│   ├── predict_dengue_2years.py
+│   │
+│   ├── models/
+│   │
+│   └── outputs/
+│       ├── csv/
+│       ├── graphs/
+│       ├── metrics/
+│       └── feature_importance/
+│
+├── data/
+│   │
+│   ├── final_brazil_municipality.csv
+│   ├── final_brazil_dengue.csv
+│   ├── municipios_coords.csv
+│   └── brazil_states.geojson
+│
+├── final/
+│   │
+│   ├── generate_visualizations.py
+│   ├── generate_visualizations_2years.py
+│   │
+│   ├── outputs/
+│   │   ├── graphs/
+│   │   ├── maps/
+│   │   ├── csv/
+│   │   └── metrics/
+│   │
+│   └── outputs_2years/
+│       ├── graphs/
+│       ├── maps/
+│       ├── csv/
+│       └── metrics/
+│
+├── run.py
+├── requirements.txt
+├── README.md
+└── LICENSE
+```
+
+---
+
+# Running the Pipeline
+
+## Install Dependencies
+
+```bash
 pip install -r requirements.txt
-``
-
-Run via run.py:
-
-| Command | Description |
-|---|---|
-| `python run.py --all` | Full end-to-end pipeline |
-| `python run.py --train-dengue` | Train models + 5-year forecast |
-| `python run.py --forecast-5years` | 5-year forecast only |
-| `python run.py --forecast-2years` | 2-year forecast only |
+```
 
 ---
 
-## Model Details
+## Run Complete Pipeline
 
-- **Algorithm**: LightGBM (Gradient Boosted Trees) - one model per climate zone
-- **Features**: Weekly epidemiological lags, temperature, precipitation, relative humidity, population density, epiweek seasonality
-- **Training Period**: 2010-2023
-- **Validation Buffer**: June 2024 - December 2025
-- **Forecast Horizon**: 2026-2030 (5 years, weekly resolution)
-- **Publication Format**: Times New Roman, 600 DPI PNG + EPS vector, no title, no gridlines
+```bash
+python run.py --all
+```
+
+---
+
+## Train Climate Models
+
+```bash
+python run.py --train-climate
+```
+
+---
+
+## Train Dengue Models
+
+```bash
+python run.py --train-dengue
+```
+
+---
+
+## Generate Five-Year Forecast
+
+```bash
+python run.py --forecast-5years
+```
+
+---
+
+## Generate Two-Year Forecast
+
+```bash
+python run.py --forecast-2years
+```
+
+---
+
+# Machine Learning Models
+
+## Climate Forecasting
+
+- Algorithm: LightGBM
+- Spatial Resolution: Municipality
+- Temporal Resolution: Weekly
+- Training Period: 2010–2021
+- Validation: 2022–2024
+- Forecast: 2025–2030
+
+Predicted Variables
+
+- Minimum Temperature
+- Mean Temperature
+- Maximum Temperature
+- Mean Precipitation
+- Total Precipitation
+- Atmospheric Pressure
+- Relative Humidity
+- Thermal Range
+- Rainy Days
+
+---
+
+## Dengue Forecasting
+
+Algorithm
+
+LightGBM
+
+Target
+
+Weekly Dengue Incidence Rate
+
+Features
+
+- Historical Incidence
+- Climate Variables
+- Population
+- Seasonal Features
+- Epidemiological Week
+- Lag Variables
+- Rolling Statistics
+
+---
+
+# Output Products
+
+The framework automatically generates:
+
+- Municipality-level climate forecasts
+- Municipality-level dengue forecasts
+- Zone-level aggregated forecasts
+- Validation metrics
+- Feature importance plots
+- Publication-quality figures (600 DPI PNG & EPS)
+- Interactive HTML choropleth maps
+- Forecast CSV files
+
+---
+
+# Software Requirements
+
+- Python 3.10+
+- LightGBM
+- Pandas
+- NumPy
+- Scikit-learn
+- Matplotlib
+- GeoPandas
+- Plotly
+- Joblib
+
+---
+
+# License
+
+This project is intended for academic research and educational purposes.
