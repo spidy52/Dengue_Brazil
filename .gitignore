@@ -19,3 +19,9 @@ __pycache__/
 # Ignore OS files
 .DS_Store
 Thumbs.db
+
+# Ignore report LaTeX file
+report.tex
+
+# Ignore Gemini AI scratch/working files
+.gemini/

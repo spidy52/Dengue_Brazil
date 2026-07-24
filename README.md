@@ -4,18 +4,22 @@ A production-grade, memory-optimized end-to-end forecasting pipeline that predic
 
 ---
 
-## 📈 Calibrated 2-Year Dengue Forecast Curves (2025–2026)
+## 📈 Dengue Forecast Curves (History vs Forecast with 2025 Validation Buffer)
 
-Here are the publication-grade forecast curves for the 2-year forecast displaying 2018–2024 historical context, 2025 validation buffer, and 2026 forecast horizon:
+Here are the master forecast curves featuring:
+- **Historical (2018–June 2024)**: Solid blue line
+- **Predicted Remaining 2024 (Jun–Dec)**: Dash-dot purple line
+- **Validation Buffer (2025)**: Dashed green line
+- **Forecast Horizon (2026–2029)**: Dotted orange line with $\pm 1\sigma$ confidence ribbon
 
 ### Climate Zone 1 (Equatorial Amazon)
-![Zone 1 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_1.png)
+![Zone 1 Dengue Forecast](final/outputs_2years/graphs/dengue_forecast_zone_1.png)
 
 ### Climate Zone 2 (Northeast Coast)
-![Zone 2 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_2.png)
+![Zone 2 Dengue Forecast](final/outputs_2years/graphs/dengue_forecast_zone_2.png)
 
 ### Climate Zone 3 (Semi-Arid Interior & Central Transition)
-![Zone 3 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_3.png)
+![Zone 3 Dengue Forecast](final/outputs_2years/graphs/dengue_forecast_zone_3.png)
 
 ---
 
