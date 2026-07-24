@@ -6,25 +6,30 @@ A production-grade, memory-optimized end-to-end forecasting pipeline that predic
 
 ## 📈 Calibrated 2-Year Dengue Forecast Curves (2025–2026)
 
-Here are the forecast curves for the shorter-term 2-year forecast (upto 2027) with the calibrated seasonality and organic wiggles:
+Here are the publication-grade forecast curves for the 2-year forecast displaying 2018–2024 historical context, 2025 validation buffer, and 2026 forecast horizon:
 
-### Climate Zone 1 (2-Year)
-![Zone 1 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_improved_2years_zone_1.png)
+### Climate Zone 1 (Equatorial Amazon)
+![Zone 1 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_1.png)
 
-### Climate Zone 2 (2-Year)
-![Zone 2 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_improved_2years_zone_2.png)
+### Climate Zone 2 (Northeast Coast)
+![Zone 2 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_2.png)
 
-### Climate Zone 3 (2-Year)
-![Zone 3 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_improved_2years_zone_3.png)
+### Climate Zone 3 (Semi-Arid Interior & Central Transition)
+![Zone 3 Dengue Forecast 2-Year](final/outputs_2years/graphs/dengue_forecast_zone_3.png)
 
 ---
 
-## 📊 Model Metrics
+## 📊 Relative Error Table (2025 Validation Buffer)
 
-```csv
-Model,MAE,RMSE,R2
-Dengue_LightGBM_Dynamic_Zonewise,45.97820143964713,119.17610347596205,0.8235989872675795
-```
+| Climate Zone | Actual 2025 Cases | Predicted 2025 Cases | Absolute Error | Relative Error % |
+| :--- | :---: | :---: | :---: | :---: |
+| **Climate Zone 1** *(Equatorial Amazon)* | **37,236** | **34,475** | **2,761** | **7.41%** |
+| **Climate Zone 2** *(Northeast Coast)* | **8,980** | **9,028** | **48** | **0.53%** |
+| **Climate Zone 3** *(Semi-Arid Interior)* | **64,393** | **63,880** | **513** | **0.80%** |
+| **Climate Zone 4** *(Central West Savanna)* | **195,110** | **185,446** | **9,664** | **4.95%** |
+| **Climate Zone 5** *(Southeast Core - SP, MG, RJ)* | **1,132,300** | **1,174,884** | **42,584** | **3.76%** |
+| **Climate Zone 6** *(Southern Temperate)* | **222,167** | **209,313** | **12,854** | **5.79%** |
+| **Total Brazil (All Zones)** | **1,660,186** | **1,677,026** | **16,840** | **1.01%** |
 
 ---
 
@@ -57,16 +62,16 @@ dengue2/
 │   │
 │   ├── outputs/                # --- 5-YEAR OUTPUTS (2025-2029) ---
 │   │   ├── csv/                # Climate and Dengue Forecast CSVs
-│   │   ├── graphs/             # Dengue & Climate Forecast & Validation curves
-│   │   ├── metrics/            # Model MAE, RMSE, R2 metrics CSV
+│   │   ├── graphs/             # Dengue Forecast & Validation curves (.eps & .png)
+│   │   ├── metrics/            # Model metrics and relative error CSV
 │   │   └── maps/               # Interactive map animations (HTML)
 │   │
 │   └── outputs_2years/         # --- 2-YEAR OUTPUTS (2025-2026) ---
 │       ├── csv/                # 2-Year Dengue Forecast CSVs
-│       ├── graphs/             # 2-Year Forecast & Validation curves
+│       ├── graphs/             # 2-Year Forecast & Validation curves (.eps & .png)
 │       └── maps/               # 2-Year Interactive map animations (HTML)
 │
-├── final_brazil_dengue.csv     # Brazil Raw Historical Dataset (2020-2024, 617MB, gitignored)
+├── final_brazil_dengue.csv     # Brazil Raw Historical Dataset (2010-2024, 617MB, gitignored)
 ├── run.py                      # Unified master pipeline orchestrator
 └── requirements.txt            # Python dependencies
 ```
@@ -98,15 +103,3 @@ Run the pipeline using **`run.py`**:
   ```bash
   python run.py --forecast-2years
   ```
-
----
-
-## 🛠️ Calibration & Model Details
-
-1. **Zone-wise Modeling:** The pipeline trains 6 separate zone-specific LightGBM Regressors to capture regional climate thresholds.
-2. **First-Difference Target:** The models predict week-over-week change in incidence ($I_t - I_{t-1}$) to prevent recursive drift.
-3. **Calibrated Parameters:**
-   - **State-Level ($S_{uf}$) Baseline Calibration**: Baseline matrices are calibrated individually for each state, ensuring São Paulo hits its epidemic magnitude while smaller states remain grounded.
-   - **State-Calibrated Recursive Parameters**: State-specific differential scales ($\text{diff\_scales}_{uf}$) and mean-reversion rates ($\gamma_{uf}$) maintain momentum in high-volume states while stabilizing low-incidence states.
-   - **Organic Jitter:** Added a small, correlated zone-level noise to restore natural weekly wiggles.
-   - **Valley Floor Clip:** Set to `1% of baseline` to allow winter lows to drop to historical levels.
