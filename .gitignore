@@ -22,6 +22,3 @@ Thumbs.db
 
 # Ignore report LaTeX file
 report.tex
-
-# Ignore Gemini AI scratch/working files
-.gemini/

@@ -1,4 +1,4 @@
-# Dengue Brazil: Climate-Driven Epidemiological Forecasting
+﻿# Dengue Brazil: Climate-Driven Epidemiological Forecasting
 
 A production-grade, memory-optimised end-to-end forecasting pipeline that predicts municipality-level dengue incidence rates across all 27 Brazilian states using LightGBM models driven by climate covariates.
 
@@ -54,56 +54,56 @@ Each plot shows three clearly separated sections:
 
 ## Project Structure
 
-`
+```
 dengue2/
-|-- climate/                    # Climate Model Training & Prediction
-|   |-- train_climate.py        # LightGBM climate model trainer
-|   -- predict_climate.py      # Climate forecast (temp, precip, humidity)
-|
-|-- dengue/                     # Dengue Model Training & Prediction
-|   |-- train_dengue.py         # LightGBM dengue trainer (2018-2024 data)
-|   |-- predict_dengue.py       # 5-Year Dengue Forecast (2025-2030)
-|   -- predict_dengue_2years.py# 2-Year Dengue Forecast (2025-2026)
-|
-|-- data/                       # Geospatial Data
-|   |-- municipios_coords.csv   # Coordinates for 5,570 municipalities
-|   -- brazil_states.geojson   # GeoJSON boundary map of 27 states
-|
-|-- final/                      # Consolidated Outputs & Visualisation
-|   |-- generate_visualizations.py        # 5-Year publication plot generator
-|   |-- generate_visualizations_2years.py # 2-Year publication plot generator
-|   |
-|   |-- outputs/                # 5-YEAR OUTPUTS (2025-2030)
-|   |   |-- graphs/             # Zone forecast curves (600DPI .png + .eps)
-|   |   |-- metrics/            # Model performance metrics
-|   |   -- maps/               # Interactive animated choropleth maps (HTML)
-|   |
-|   -- outputs_2years/         # 2-YEAR OUTPUTS (2025-2026)
-|       |-- graphs/             # 2-Year forecast curves (.eps & .png)
-|       -- maps/               # 2-Year interactive maps
-|
-|-- final_brazil_dengue.csv     # Raw dataset (2010-2024, 617MB, gitignored)
-|-- run.py                      # Unified master pipeline orchestrator
--- requirements.txt            # Python dependencies
-`
+950094729472 climate/                    # Climate Model Training & Prediction
+9474   950094729472 train_climate.py        # LightGBM climate model trainer
+9474   949294729472 predict_climate.py      # Climate forecast (temp, precip, humidity)
+9474
+950094729472 dengue/                     # Dengue Model Training & Prediction
+9474   950094729472 train_dengue.py         # LightGBM dengue trainer (2018-2024 data)
+9474   950094729472 predict_dengue.py       # 5-Year Dengue Forecast (2025-2030)
+9474   949294729472 predict_dengue_2years.py# 2-Year Dengue Forecast (2025-2026)
+9474
+950094729472 data/                       # Geospatial Data
+9474   950094729472 municipios_coords.csv   # Coordinates for 5,570 municipalities
+9474   949294729472 brazil_states.geojson   # GeoJSON boundary map of 27 states
+9474
+950094729472 final/                      # Consolidated Outputs & Visualisation
+9474   950094729472 generate_visualizations.py        # 5-Year publication plot generator
+9474   950094729472 generate_visualizations_2years.py # 2-Year publication plot generator
+9474   9474
+9474   950094729472 outputs/                # 5-YEAR OUTPUTS (2025-2030)
+9474   9474   950094729472 graphs/             # Zone forecast curves (600DPI .png + .eps)
+9474   9474   950094729472 metrics/            # Model performance metrics
+9474   9474   949294729472 maps/               # Interactive animated choropleth maps (HTML)
+9474   9474
+9474   949294729472 outputs_2years/         # 2-YEAR OUTPUTS (2025-2026)
+9474       950094729472 graphs/             # 2-Year forecast curves (.eps & .png)
+9474       949294729472 maps/               # 2-Year interactive maps
+9474
+950094729472 final_brazil_dengue.csv     # Raw dataset (2010-2024, 617MB, gitignored)
+950094729472 run.py                      # Unified master pipeline orchestrator
+949294729472 requirements.txt            # Python dependencies
+```
 
 ---
 
 ## How to Run
 
 Install dependencies:
-`ash
+``ash
 pip install -r requirements.txt
-`
+``
 
 Run via run.py:
 
 | Command | Description |
 |---|---|
-| python run.py --all | Full end-to-end pipeline |
-| python run.py --train-dengue | Train models + 5-year forecast |
-| python run.py --forecast-5years | 5-year forecast only |
-| python run.py --forecast-2years | 2-year forecast only |
+| `python run.py --all` | Full end-to-end pipeline |
+| `python run.py --train-dengue` | Train models + 5-year forecast |
+| `python run.py --forecast-5years` | 5-year forecast only |
+| `python run.py --forecast-2years` | 2-year forecast only |
 
 ---
 
