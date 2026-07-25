@@ -143,10 +143,10 @@ def run_dengue_prediction():
             noise = np.random.normal(0, 0.02 * max(iv, 0.5))
             iv = max(iv + noise, 0.1)
             c_val = round((iv / 100000.0) * z_pop)
-            sig_val = float(w_std_map.get(wk + 1, g_std))
-            if sig_val == 0.0 or np.isnan(sig_val):
-                sig_val = float(g_std)
-                
+            # Proportional uncertainty ribbon scaling based on forecast magnitude
+            rel_std = float(w_std_map.get(wk + 1, g_std))
+            sig_val = max(0.20 * iv, min(rel_std, 0.35 * iv + 2.5))
+            
             rec = {
                 "date": dt.strftime("%Y-%m-%d"),
                 "climate_zone": float(zone),
@@ -176,9 +176,8 @@ def run_dengue_prediction():
             iv = max(iv + noise, 0.1)
             c_val = round((iv / 100000.0) * z_pop)
             
-            sig_val = float(w_std_map.get(wk + 1, g_std))
-            if sig_val == 0.0 or np.isnan(sig_val):
-                sig_val = float(g_std)
+            rel_std = float(w_std_map.get(wk + 1, g_std))
+            sig_val = max(0.20 * iv, min(rel_std, 0.35 * iv + 2.5))
                 
             rec = {
                 "date": dt.strftime("%Y-%m-%d"),
