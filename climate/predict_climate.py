@@ -67,7 +67,7 @@ def predict_climate():
     
     # Generate weekly dates for the forecast period (2024-06-09 to 2029-12-30, 290 weeks)
     start_forecast_date = last_52_dates[-1] + pd.Timedelta(days=7)
-    forecast_dates = pd.date_range(start=start_forecast_date, end="2029-12-30", freq="7D")
+    forecast_dates = pd.date_range(start=start_forecast_date, end="2030-12-28", freq="7D")
     num_weeks = len(forecast_dates)
     print(f"Forecast weeks: {num_weeks} (from {forecast_dates[0].strftime('%Y-%m-%d')} to {forecast_dates[-1].strftime('%Y-%m-%d')})")
     
@@ -194,21 +194,21 @@ def predict_climate():
         
     forecast_df = pd.concat(week_dfs, ignore_index=True)
     
-    # Keep only 2025-2029 forecast as requested
-    forecast_2025_2029 = forecast_df[(forecast_df["year"] >= 2025) & (forecast_df["year"] <= 2029)].reset_index(drop=True)
+    # Keep 2025-2030 forecast
+    forecast_2025_2030 = forecast_df[(forecast_df["year"] >= 2025) & (forecast_df["year"] <= 2030)].reset_index(drop=True)
     
     # Save outputs
-    out_path_1 = "climate/outputs/municipality_climate_2025_2029.csv"
-    out_path_2 = "final/outputs/csv/municipality_climate_2025_2029.csv"
-    out_path_full = "climate/outputs/municipality_climate_2024_2029_full.csv"
+    out_path_1 = "climate/outputs/municipality_climate_2025_2030.csv"
+    out_path_2 = "final/outputs/csv/municipality_climate_2025_2030.csv"
+    out_path_full = "climate/outputs/municipality_climate_2024_2030_full.csv"
     
-    forecast_2025_2029.to_csv(out_path_1, index=False)
-    forecast_2025_2029.to_csv(out_path_2, index=False)
+    forecast_2025_2030.to_csv(out_path_1, index=False)
+    forecast_2025_2030.to_csv(out_path_2, index=False)
     forecast_df.to_csv(out_path_full, index=False)
     
     print(f"Saved climate forecasts to {out_path_1} and {out_path_2}")
     print(f"Saved full forecast to {out_path_full}")
-    print(f"Forecast data shape: {forecast_2025_2029.shape}")
+    print(f"Forecast data shape: {forecast_2025_2030.shape}")
 
 if __name__ == "__main__":
     predict_climate()

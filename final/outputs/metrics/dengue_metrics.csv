@@ -1,3 +1,4 @@
-Model,Level,MAE,RMSE,R2,Pearson_R,Spearman_Rho
-Dengue_LightGBM_Dynamic_Zonewise,Municipality_Level_Validation_5570_Muns,45.97820143964713,119.17610347596205,0.8235989872675795,0.8815,0.9412
-Dengue_LightGBM_Dynamic_Zonewise,State_Level_2025_Actual_Evaluation,29966.59259259259,52537.75652205155,0.9036891810567441,0.9725,0.9182
+Model,Level,R2,Pearson_R,Spearman_Rho,MAE_Cases,Outbreak_ROC_AUC
+LightGBM_Dynamic_Zonewise_HighPrecision,State_Level_Weekly_Aggregation,0.8887,0.989,0.9788,1074.87,0.9349
+LightGBM_Dynamic_Zonewise_HighPrecision,Zone_Level_Weekly_Aggregation,0.8561,0.989,0.9788,1074.87,0.9349
+LightGBM_Dynamic_Zonewise_HighPrecision,Municipality_Level_Validation_5561_Muns,0.5609,0.8195,0.7408,26.4184,0.9349
