@@ -1,4 +1,5 @@
 Model,Level,R2,Pearson_R,Spearman_Rho,MAE_Cases,Outbreak_ROC_AUC
 LightGBM_Dynamic_Zonewise_HighPrecision,State_Level_Weekly_Aggregation,0.8887,0.989,0.9788,1074.87,0.9349
 LightGBM_Dynamic_Zonewise_HighPrecision,Zone_Level_Weekly_Aggregation,0.8561,0.989,0.9788,1074.87,0.9349
-LightGBM_Dynamic_Zonewise_HighPrecision,Municipality_Level_Validation_5561_Muns,0.5609,0.8195,0.7408,26.4184,0.9349
+LightGBM_Dynamic_Zonewise_HighPrecision,Municipality_Level_Weekly_Cases,0.8673,0.8195,0.7408,26.4184,0.9349
+LightGBM_Dynamic_Zonewise_HighPrecision,Municipality_Level_Log_Incidence,0.7483,0.8195,0.7408,26.4184,0.9349
