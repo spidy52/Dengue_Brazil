@@ -204,12 +204,17 @@ def train_dengue():
         
     joblib.dump(zone_residual_std, "dengue/models/residual_info.joblib")
     
+    state_rmse = np.sqrt(mean_squared_error(state_weekly["cases"].values, state_weekly["pred_cases"].values))
+    zone_mae = mean_absolute_error(zone_weekly["true_inc"].values, zone_weekly["pred_inc"].values)
+    zone_rmse = np.sqrt(mean_squared_error(zone_weekly["true_inc"].values, zone_weekly["pred_inc"].values))
+    muni_rmse = np.sqrt(mean_squared_error(muni_inc_true, muni_inc_pred))
+    
     print("\n=========================================================")
     print("=== DYNAMICALLY COMPUTED MODEL VALIDATION METRICS ===")
     print("=========================================================")
-    print(f"  State-Level Weekly Cases R2 Score : {state_r2:.4f}  (> 0.88 Threshold Met!)")
-    print(f"  Zone-Level Weekly Incidence R2    : {zone_r2:.4f}  (> 0.88 Threshold Met!)")
-    print(f"  Municipality-Level Weekly Cases R2: {muni_cases_r2:.4f}  (High Precision!)")
+    print(f"  State-Level Weekly Cases R2 Score : {state_r2:.4f} | MAE: {state_mae:.2f} cases | RMSE: {state_rmse:.2f} cases")
+    print(f"  Zone-Level Weekly Incidence R2    : {zone_r2:.4f} | MAE: {zone_mae:.2f} /100k | RMSE: {zone_rmse:.2f} /100k")
+    print(f"  Municipality-Level Weekly Cases R2: {muni_cases_r2:.4f} | MAE: {muni_mae:.2f} /100k | RMSE: {muni_rmse:.2f} /100k")
     print(f"  Municipality-Level Log-Incidence R2: {muni_log_r2:.4f}")
     print(f"  State-Level Pearson R             : {state_pear_r:.4f}")
     print(f"  State-Level Spearman Rho          : {state_spear_rho:.4f}")
@@ -219,20 +224,22 @@ def train_dengue():
     metrics_df = pd.DataFrame([
         {
             "Model": "LightGBM_Dynamic_Zonewise_HighPrecision",
-            "Level": "State_Level_Weekly_Aggregation",
+            "Level": "State_Level_Weekly_Cases",
             "R2": round(float(state_r2), 4),
             "Pearson_R": round(float(state_pear_r), 4),
             "Spearman_Rho": round(float(state_spear_rho), 4),
-            "MAE_Cases": round(float(state_mae), 2),
+            "MAE": f"{round(float(state_mae), 2)} cases",
+            "RMSE": f"{round(float(state_rmse), 2)} cases",
             "Outbreak_ROC_AUC": round(float(roc_auc), 4)
         },
         {
             "Model": "LightGBM_Dynamic_Zonewise_HighPrecision",
-            "Level": "Zone_Level_Weekly_Aggregation",
+            "Level": "Zone_Level_Weekly_Incidence",
             "R2": round(float(zone_r2), 4),
             "Pearson_R": round(float(state_pear_r), 4),
             "Spearman_Rho": round(float(state_spear_rho), 4),
-            "MAE_Cases": round(float(state_mae), 2),
+            "MAE": f"{round(float(zone_mae), 2)} /100k",
+            "RMSE": f"{round(float(zone_rmse), 2)} /100k",
             "Outbreak_ROC_AUC": round(float(roc_auc), 4)
         },
         {
@@ -241,7 +248,8 @@ def train_dengue():
             "R2": round(float(muni_cases_r2), 4),
             "Pearson_R": round(float(muni_pear_r), 4),
             "Spearman_Rho": round(float(muni_spear_rho), 4),
-            "MAE_Cases": round(float(muni_mae), 4),
+            "MAE": f"{round(float(muni_mae), 2)} /100k",
+            "RMSE": f"{round(float(muni_rmse), 2)} /100k",
             "Outbreak_ROC_AUC": round(float(roc_auc), 4)
         },
         {
@@ -250,7 +258,8 @@ def train_dengue():
             "R2": round(float(muni_log_r2), 4),
             "Pearson_R": round(float(muni_pear_r), 4),
             "Spearman_Rho": round(float(muni_spear_rho), 4),
-            "MAE_Cases": round(float(muni_mae), 4),
+            "MAE": f"{round(float(muni_mae), 2)} /100k",
+            "RMSE": f"{round(float(muni_rmse), 2)} /100k",
             "Outbreak_ROC_AUC": round(float(roc_auc), 4)
         }
     ])

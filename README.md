@@ -8,9 +8,9 @@ A production-grade, memory-optimised two-stage machine learning pipeline that pr
 
 Evaluated on multi-year unseen test set (2023–2024 out-of-time holdout):
 
-| Aggregation Level | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | Outbreak ROC-AUC | Validation Status |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Zone-Level Weekly Incidence** | **0.8561** | **0.9890** | **0.9788** | 26.42 /100k | **0.9349** | ✅ Empirical Baseline |
+| Aggregation Level | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | RMSE | Outbreak ROC-AUC | Validation Status |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Zone-Level Weekly Incidence** | **0.8561** | **0.9890** | **0.9788** | **26.42 /100k** | **74.18 /100k** | **0.9349** | ✅ Empirical Baseline |
 
 ---
 
