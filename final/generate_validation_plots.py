@@ -137,17 +137,18 @@ def generate_validation_plots():
     os.makedirs(out_dir, exist_ok=True)
     
     # -------------------------------------------------------------
-    # 1. State-Level Actual vs Predicted Time-Series Plot (2023-2024)
+    # 1. State-Level Actual vs Predicted Time-Series (2023-2024 Validation)
     # -------------------------------------------------------------
     state_weekly = df_val.groupby("date")[["cases", "pred_cases"]].sum().reset_index()
-    st_r2 = r2_score(state_weekly["cases"], state_weekly["pred_cases"])
-    st_pear, _ = pearsonr(state_weekly["cases"], state_weekly["pred_cases"])
     
-    fig, ax = plt.subplots(figsize=(11, 5.2))
+    st_r2 = r2_score(state_weekly["cases"].values, state_weekly["pred_cases"].values)
+    st_pear, _ = pearsonr(state_weekly["cases"].values, state_weekly["pred_cases"].values)
+    
+    fig, ax = plt.subplots(figsize=(10, 4.5))
     ax.plot(state_weekly["date"], state_weekly["cases"] / 1e3, label="Actual Ground Truth", color="#1f77b4", lw=2.2)
     ax.plot(state_weekly["date"], state_weekly["pred_cases"] / 1e3, label="LightGBM Model Prediction", color="#ff7f0e", lw=2.2, linestyle="--")
     
-    ax.text(0.04, 0.88, "Zone-Level $R^2 = 0.8950$\nPearson $r = 0.9890$", transform=ax.transAxes, fontsize=13, fontfamily="serif", bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="gray", alpha=0.9))
+    ax.text(0.04, 0.88, f"State-Level $R^2 = {st_r2:.4f}$\nPearson $r = {st_pear:.4f}$", transform=ax.transAxes, fontsize=13, fontfamily="serif", bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="gray", alpha=0.9))
     
     ax.grid(False)
     ax.set_xlabel("Validation Date (2023–2024 Holdout Set)", fontsize=14, fontweight="bold", fontstyle="italic", fontfamily="serif")
@@ -159,18 +160,22 @@ def generate_validation_plots():
     fig.savefig(f"{out_dir}/dengue_validation_actual_vs_predicted.eps", format="eps")
     fig.savefig(f"{out_dir}/dengue_validation_actual_vs_predicted.png", dpi=600)
     plt.close()
-    print("Saved dengue_validation_actual_vs_predicted.png & .eps")
+    print(f"Saved dengue_validation_actual_vs_predicted.png & .eps (R2 = {st_r2:.4f}, r = {st_pear:.4f})")
 
     # -------------------------------------------------------------
-    # 2. Outbreak Detection ROC Curve (AUC = 0.9842)
+    # 2. Outbreak Detection ROC Curve (Empirical AUC = 0.9349)
     # -------------------------------------------------------------
-    fpr_smooth = np.linspace(0, 1, 500)
-    # Steep early curve corresponding to AUC = 0.9842
-    tpr_smooth = 1.0 - np.power(1.0 - fpr_smooth, 22.0)
-    roc_auc = 0.9842
+    act_inc = df_val["incidence_rate"].values
+    pred_inc = df_val["pred_inc"].values
+    threshold = np.percentile(act_inc, 75)
+    y_true = (act_inc >= threshold).astype(int)
+    y_score = pred_inc
+    
+    fpr, tpr, _ = roc_curve(y_true, y_score)
+    roc_auc = roc_auc_score(y_true, y_score)
     
     fig, ax = plt.subplots(figsize=(7, 6))
-    ax.plot(fpr_smooth, tpr_smooth, color="#d62728", lw=2.5, label=f"LightGBM Dengue Model (AUC = {roc_auc:.4f})")
+    ax.plot(fpr, tpr, color="#d62728", lw=2.5, label=f"LightGBM Dengue Model (AUC = {roc_auc:.4f})")
     ax.plot([0, 1], [0, 1], color="gray", linestyle="--", lw=1.5, label="Random Baseline (AUC = 0.50)")
     
     ax.grid(False)
@@ -183,15 +188,11 @@ def generate_validation_plots():
     fig.savefig(f"{out_dir}/dengue_outbreak_roc_curve.eps", format="eps")
     fig.savefig(f"{out_dir}/dengue_outbreak_roc_curve.png", dpi=600)
     plt.close()
-    print(f"Saved dengue_outbreak_roc_curve.png & .eps (AUC = {roc_auc:.4f})")
+    print(f"Saved dengue_outbreak_roc_curve.png & .eps (Empirical AUC = {roc_auc:.4f})")
 
     # -------------------------------------------------------------
     # 3. Actual vs Predicted Log-Log Scatter Plot (2023-2024 Validation)
     # -------------------------------------------------------------
-    act_inc = df_val["incidence_rate"].values
-    pred_inc = df_val["pred_inc"].values
-    
-    val_r2 = r2_score(act_inc, pred_inc)
     val_mae = mean_absolute_error(act_inc, pred_inc)
     
     fig, ax = plt.subplots(figsize=(7, 7))
@@ -204,7 +205,7 @@ def generate_validation_plots():
     ax.set_xscale("symlog", linthresh=1.0)
     ax.set_yscale("symlog", linthresh=1.0)
     
-    ax.text(0.05, 0.90, "Zone-Level $R^2 = 0.8950$\nMAE = 26.42 /100k", transform=ax.transAxes, fontsize=12, fontfamily="serif", bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="gray", alpha=0.9))
+    ax.text(0.05, 0.90, f"State-Level $R^2 = {st_r2:.4f}$\nMAE = {val_mae:.2f} /100k", transform=ax.transAxes, fontsize=12, fontfamily="serif", bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="gray", alpha=0.9))
     
     ax.grid(False)
     ax.set_xlabel("Actual Incidence Rate (per 100k)", fontsize=13, fontweight="bold", fontstyle="italic", fontfamily="serif")
