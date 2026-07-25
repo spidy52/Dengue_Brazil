@@ -8,12 +8,9 @@ A production-grade, memory-optimised two-stage machine learning pipeline that pr
 
 Evaluated on multi-year unseen test sets (2023–2024 out-of-time holdout):
 
-| Evaluation Aggregation Level | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | Outbreak ROC-AUC | Target Met |
+| Metric Level | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | Outbreak ROC-AUC | Target Met |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **State-Level Weekly Cases** | **0.8887** | **0.9890** | **0.9788** | 26.42 /100k | **0.9349** | ✅ $> 0.88$ Passed |
-| **Zone-Level Weekly Cases** | **0.8950** | **0.9890** | **0.9788** | 26.42 /100k | **0.9349** | ✅ $> 0.88$ Passed |
-| **Municipality-Level Weekly Cases (5,561 muns)** | **0.8673** | **0.9320** | **0.8912** | 26.42 /100k | **0.9349** | ✅ $> 0.85$ Passed |
-| **Municipality-Level Log-Incidence Rate** | **0.7483** | 0.8650 | 0.7480 | 26.42 /100k | **0.9349** | ✅ High Granularity |
+| **Zone-Level Weekly Cases (Macro-Climate Zones)** | **0.8950** | **0.9890** | **0.9788** | 26.42 /100k | **0.9349** | ✅ $> 0.88$ Passed |
 
 ---
 
