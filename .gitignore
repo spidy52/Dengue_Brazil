@@ -1,26 +1,33 @@
-# Ignore raw large dataset (617MB)
+# Data files
+*.csv
 final_brazil_dengue.csv
 
-# Ignore all CSV files
-*.csv
+# Folders to exclude from GitHub repository
+scratch/
+figures/
+.tempmediaStorage/
 
-# Ignore trained model binaries
+# Trained model binaries
 *.joblib
+*.pth
 climate/models/
 dengue/models/
 
-# Ignore compiled python cache
+# Generated output directories
+climate/outputs/
+dengue/outputs/
+final/outputs/
+final/outputs_2years/
+
+# HTML animations & maps
+*.html
+
+# Python cache & build files
 __pycache__/
 *.pyc
 
-# Ignore large generated HTML maps (>50MB each)
-*.html
-
-# Ignore OS files
-# Ignore LaTeX manuscript report file
+# OS & LaTeX report files
 report.tex
 report.*
 Thumbs.db
-
-# Ignore report LaTeX file
-report.tex
+.DS_Store

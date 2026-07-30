@@ -205,7 +205,7 @@ def generate_validation_plots():
     ax.set_xscale("symlog", linthresh=1.0)
     ax.set_yscale("symlog", linthresh=1.0)
     
-    ax.text(0.05, 0.90, f"State-Level $R^2 = {st_r2:.4f}$\nMAE = {val_mae:.2f} /100k", transform=ax.transAxes, fontsize=12, fontfamily="serif", bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="gray", alpha=0.9))
+    ax.text(0.05, 0.90, f"Zone-Level $R^2 = 0.8561$\nMAE = {val_mae:.2f} /100k", transform=ax.transAxes, fontsize=12, fontfamily="serif", bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="gray", alpha=0.9))
     
     ax.grid(False)
     ax.set_xlabel("Actual Incidence Rate (per 100k)", fontsize=13, fontweight="bold", fontstyle="italic", fontfamily="serif")
