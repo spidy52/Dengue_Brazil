@@ -40,10 +40,10 @@ Evaluated on **100% unseen out-of-time temporal holdout test data (2023–2024)*
 ## 📊 Publication Forecast Figures
 
 ### 1. High-Resolution Dengue Forecast (2-Year Horizon: 2025–2026)
-![2-Year Dengue Forecast](figures/dengue_forecast_combined_zones_2years.png)
+![2-Year Dengue Forecast](https://raw.githubusercontent.com/spidy52/Dengue_Brazil/main/figures/dengue_forecast_combined_zones_2years.png)
 
 ### 2. High-Resolution Dengue Forecast (5-Year Horizon: 2025–2030)
-![5-Year Dengue Forecast](figures/dengue_forecast_combined_zones_5years.png)
+![5-Year Dengue Forecast](https://raw.githubusercontent.com/spidy52/Dengue_Brazil/main/figures/dengue_forecast_combined_zones_5years.png)
 
 ---
 
