@@ -10,7 +10,7 @@ Evaluated on multi-year unseen test set (2022–2024 out-of-time holdout):
 
 | Aggregation Level | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | RMSE | Outbreak ROC-AUC |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Zone-Level Weekly Incidence** | **0.9508 – 0.9614** | **0.9890** | **0.9788** | **0.77 – 11.45 /100k** | **4.12 /100k** | **0.9349** |
+| **Zone-Level Weekly Incidence** | **0.7694 – 0.9177** | **0.9890** | **0.9788** | **1.28 – 15.07 /100k** | **4.12 /100k** | **0.9349** |
 | **Pooled Municipality Incidence**| **0.8561** | **0.9240** | **0.9110** | **4.12 /100k** | **12.80 /100k** | **0.9349** |
 
 ---
