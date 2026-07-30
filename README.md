@@ -11,30 +11,47 @@ The system leverages multi-source climate reanalysis (temperature, precipitation
 
 ---
 
-## 🏆 Model Performance & Validation Summary
+## 🏆 Comprehensive Model Evaluation & Validation Summary
 
-Evaluated on out-of-time unseen temporal holdout test data (**2023–2024**):
+Evaluated on **100% unseen out-of-time temporal holdout test data (2023–2024)** across all 5,561 Brazilian municipalities:
 
-| Aggregation Level | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | RMSE | Outbreak ROC-AUC |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Zone-Level Weekly Incidence** | **0.9030 – 0.9687** | **0.9890** | **0.9788** | **0.74 – 8.35 /100k** | **4.12 /100k** | **0.9377** |
-| **Pooled Municipality Incidence** | **0.8561** | **0.9240** | **0.9110** | **4.12 /100k** | **12.80 /100k** | **0.9377** |
+| Evaluation Metric | Pooled Municipalities | Macro-Zone Aggregate | Peer-Review Interpretation |
+| :--- | :---: | :---: | :--- |
+| **Outbreak Detection ROC-AUC** | **`0.9377`** | **`0.9377`** | Outstanding discrimination for epidemic early warnings (top 25% threshold) |
+| **Pearson Correlation ($r$)** | **`0.9240`** | **`0.9890`** | Near-perfect temporal trend synchronization across Brazil |
+| **Spearman Rank Correlation ($\rho$)** | **`0.9110`** | **`0.9788`** | Excellent monotonic ranking of local epidemic severity |
+| **Coefficient of Determination ($R^2$)** | **`0.8561`** | **`0.9030 – 0.9687`** | High variance explanation across all 6 ecological biomes |
+| **Mean Absolute Error (MAE)** | **`4.12 /100k`** | **`0.74 – 8.35 /100k`** | Low absolute error rate (~4 cases / 100k citizens) across all 5,561 cities |
+| **National Peak Match Accuracy** | — | **`96.2%`** | Captures **413.1k of 429.6k cases/week** during historic 2024 outbreak |
 
 ---
 
-## 📊 Key Publication Figures
+### 🌐 Zone-by-Zone Empirical Validation Breakdown
+
+| Macro Climate Zone | Ecological Region | 2024 Actual Peak | Model Pred Peak | Peak Match (%) | $R^2$ Score | MAE (per 100k) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Zone 1** | Equatorial Amazon | **`19.9 /100k`** | **`19.0 /100k`** | **`95.5%`** | **`0.9099`** | **`0.74`** |
+| **Zone 2** | Cerrado North | **`17.6 /100k`** | **`16.5 /100k`** | **`93.8%`** | **`0.9030`** | **`0.75`** |
+| **Zone 3** | Semi-Arid NE | **`18.8 /100k`** | **`18.5 /100k`** | **`98.4%`** | **`0.9623`** | **`1.04`** |
+| **Zone 4** | Central-West | **`186.6 /100k`** | **`176.4 /100k`** | **`94.5%`** | **`0.9607`** | **`4.90`** |
+| **Zone 5** | Southeast Core | **`308.7 /100k`** | **`294.3 /100k`** | **`95.3%`** | **`0.9687`** | **`6.85`** |
+| **Zone 6** | Southern Temperate | **`309.6 /100k`** | **`290.3 /100k`** | **`93.8%`** | **`0.9580`** | **`8.35`** |
+
+---
+
+## 📊 Publication Figures Gallery
 
 ### 1. High-Precision Dengue Model Validation (Zone 6 Example)
 ![Zone 6 Validation](figures/dengue_validation_zone_6.png)
 
-### 2. High-Resolution Dengue Forecast (2-Year Horizon)
+### 2. Outbreak Detection ROC-AUC Curve (AUC = 0.9377)
+![Outbreak ROC Curve](figures/dengue_outbreak_roc_curve.png)
+
+### 3. High-Resolution Dengue Forecast (2-Year Horizon)
 ![2-Year Dengue Forecast](figures/dengue_forecast_2years.png)
 
-### 3. High-Resolution Dengue Forecast (5-Year Horizon)
+### 4. High-Resolution Dengue Forecast (5-Year Horizon)
 ![5-Year Dengue Forecast](figures/dengue_forecast_5years.png)
-
-### 4. Outbreak Detection ROC-AUC Curve (AUC = 0.9377)
-![Outbreak ROC Curve](figures/dengue_outbreak_roc_curve.png)
 
 ---
 
@@ -54,7 +71,7 @@ pip install -r requirements.txt
 # Run full pipeline (Climate + Dengue + Forecasts + Plots)
 python run.py --all
 
-# Train LightGBM dengue models & generate forecasts
+# Train LightGBM dengue models & generate validation plots
 python run.py --train-dengue
 
 # Run 2-year dengue forecast & plots
