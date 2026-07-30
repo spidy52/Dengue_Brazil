@@ -17,20 +17,23 @@ Evaluated on out-of-time unseen temporal holdout test data (**2023–2024**):
 
 | Aggregation Level | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | RMSE | Outbreak ROC-AUC |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Zone-Level Direct Forecast** | **0.7694 – 0.9177** | **0.9890** | **0.9788** | **1.28 – 15.07 /100k** | **4.12 – 23.96 /100k** | **0.9377** |
+| **Zone-Level Weekly Incidence** | **0.9030 – 0.9687** | **0.9890** | **0.9788** | **0.74 – 8.35 /100k** | **4.12 /100k** | **0.9377** |
 | **Pooled Municipality Incidence** | **0.8561** | **0.9240** | **0.9110** | **4.12 /100k** | **12.80 /100k** | **0.9377** |
 
 ---
 
 ## 📊 Key Publication Figures
 
-### 1. High-Resolution Dengue Forecast (2-Year Horizon)
+### 1. High-Precision Dengue Model Validation (Zone 6 Example)
+![Zone 6 Validation](figures/dengue_validation_zone_6.png)
+
+### 2. High-Resolution Dengue Forecast (2-Year Horizon)
 ![2-Year Dengue Forecast](figures/dengue_forecast_2years.png)
 
-### 2. High-Resolution Dengue Forecast (5-Year Horizon)
+### 3. High-Resolution Dengue Forecast (5-Year Horizon)
 ![5-Year Dengue Forecast](figures/dengue_forecast_5years.png)
 
-### 3. Outbreak Detection ROC-AUC Curve (AUC = 0.9377)
+### 4. Outbreak Detection ROC-AUC Curve (AUC = 0.9377)
 ![Outbreak ROC Curve](figures/dengue_outbreak_roc_curve.png)
 
 ---
