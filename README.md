@@ -11,29 +11,29 @@ The system leverages multi-source climate reanalysis (temperature, precipitation
 
 ---
 
-## 🏆 Model Performance & Validation Summary
+## 🏆 Model Performance & Empirical Validation Summary
 
 Evaluated on **100% unseen out-of-time temporal holdout test data (2023–2024)** across all 5,561 Brazilian municipalities and 27 states:
 
-| Aggregation Level & Unit Scale | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | RMSE | Outbreak ROC-AUC |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **State-Level Total Cases Aggregate** | **`0.8887`** | **`0.9890`** | **`0.9788`** | **`1,074.87 cases/wk`** | **`4,505.25 cases/wk`** | **`0.9349`** |
-| **Zone-Level Weekly Incidence** | **`0.9030 – 0.9687`** | **`0.9890`** | **`0.9788`** | **`0.74 – 8.35 /100k`** | **`4.12 /100k`** | **`0.9349`** |
-| **Pooled Municipality Cases** | **`0.8673`** | **`0.9240`** | **`0.9110`** | **`6.54 cases/wk`** | **`119.81 cases/wk`** | **`0.9349`** |
-| **Pooled Municipality Incidence** | **`0.8561`** | **`0.9240`** | **`0.9110`** | **`26.42 /100k`** | **`12.80 /100k`** | **`0.9349`** |
+| Aggregation Level & Metric Scale | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | RMSE | Outbreak ROC-AUC | Evaluation Type |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **State-Level Total Cases Aggregate** | **`0.8887`** | **`0.9890`** | **`0.9788`** | **`1,074.87 cases/wk`** | **`4,505.25 cases/wk`** | **`0.9349`** | Empirical Baseline |
+| **Zone-Level Weekly Incidence** | **`0.8561`** | **`0.9890`** | **`0.9788`** | **`4.12 /100k`** | **`23.96 /100k`** | **`0.9349`** | Empirical Baseline |
+| **Municipality-Level Weekly Cases** | **`0.8673`** | **`0.9240`** | **`0.9110`** | **`26.42 /100k`** | **`74.18 /100k`** | **`0.9349`** | Empirical Baseline |
+| **Zone High-Precision Surveillance** | **`0.9030 – 0.9687`** | **`0.9890`** | **`0.9788`** | **`0.74 – 8.35 /100k`** | **`4.12 /100k`** | **`0.9377`** | High-Precision |
 
 ---
 
 ### 🌐 Zone-by-Zone Empirical Validation Breakdown
 
-| Macro Climate Zone | Ecological Region | 2024 Actual Peak | Model Pred Peak | Peak Match (%) | $R^2$ Score | MAE (per 100k) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Zone 1** | Equatorial Amazon | **`19.9 /100k`** | **`19.0 /100k`** | **`95.5%`** | **`0.9099`** | **`0.74`** |
-| **Zone 2** | Cerrado North | **`17.6 /100k`** | **`16.5 /100k`** | **`93.8%`** | **`0.9030`** | **`0.75`** |
-| **Zone 3** | Semi-Arid NE | **`18.8 /100k`** | **`18.5 /100k`** | **`98.4%`** | **`0.9623`** | **`1.04`** |
-| **Zone 4** | Central-West | **`186.6 /100k`** | **`176.4 /100k`** | **`94.5%`** | **`0.9607`** | **`4.90`** |
-| **Zone 5** | Southeast Core | **`308.7 /100k`** | **`294.3 /100k`** | **`95.3%`** | **`0.9687`** | **`6.85`** |
-| **Zone 6** | Southern Temperate | **`309.6 /100k`** | **`290.3 /100k`** | **`93.8%`** | **`0.9580`** | **`8.35`** |
+| Macro Climate Zone | Ecological Region | 2024 Actual Peak | Pure Climate Pred Peak | High-Precision Pred Peak | Peak Match (%) | Pure Climate $R^2$ | Surveillance $R^2$ |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Zone 1** | Equatorial Amazon | **`19.9 /100k`** | **`13.9 /100k`** | **`19.0 /100k`** | **`95.5%`** | `0.7694` | **`0.9099`** |
+| **Zone 2** | Cerrado North | **`17.6 /100k`** | **`10.0 /100k`** | **`16.5 /100k`** | **`93.8%`** | `0.7969` | **`0.9030`** |
+| **Zone 3** | Semi-Arid NE | **`18.8 /100k`** | **`17.0 /100k`** | **`18.5 /100k`** | **`98.4%`** | `0.9177` | **`0.9623`** |
+| **Zone 4** | Central-West | **`186.6 /100k`** | **`122.2 /100k`** | **`176.4 /100k`** | **`94.5%`** | `0.8113` | **`0.9607`** |
+| **Zone 5** | Southeast Core | **`308.7 /100k`** | **`212.5 /100k`** | **`294.3 /100k`** | **`95.3%`** | `0.8890` | **`0.9687`** |
+| **Zone 6** | Southern Temperate | **`309.6 /100k`** | **`190.8 /100k`** | **`290.3 /100k`** | **`93.8%`** | `0.8156` | **`0.9580`** |
 
 ---
 
