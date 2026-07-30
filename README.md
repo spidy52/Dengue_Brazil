@@ -11,7 +11,7 @@ The system leverages multi-source climate reanalysis (temperature, precipitation
 
 ---
 
-## 🏆 Final Peer-Reviewed Model Performance Summary
+## 🏆 Model Performance & Validation Summary
 
 Evaluated on **100% unseen out-of-time temporal holdout test data (2023–2024)** across all 5,561 Brazilian municipalities and 27 states:
 
@@ -37,18 +37,12 @@ Evaluated on **100% unseen out-of-time temporal holdout test data (2023–2024)*
 
 ---
 
-## 📊 Publication Figures Gallery
+## 📊 Publication Forecast Figures
 
-### 1. High-Precision Dengue Model Validation (Zone 6 Example)
-![Zone 6 Validation](figures/dengue_validation_zone_6.png)
-
-### 2. Outbreak Detection ROC-AUC Curve (AUC = 0.9349)
-![Outbreak ROC Curve](figures/dengue_outbreak_roc_curve.png)
-
-### 3. High-Resolution Dengue Forecast (2-Year Horizon)
+### 1. High-Resolution Dengue Forecast (2-Year Horizon: 2025–2026)
 ![2-Year Dengue Forecast](figures/dengue_forecast_2years.png)
 
-### 4. High-Resolution Dengue Forecast (5-Year Horizon)
+### 2. High-Resolution Dengue Forecast (5-Year Horizon: 2025–2030)
 ![5-Year Dengue Forecast](figures/dengue_forecast_5years.png)
 
 ---
@@ -69,7 +63,7 @@ pip install -r requirements.txt
 # Run full pipeline (Climate + Dengue + Forecasts + Plots)
 python run.py --all
 
-# Train LightGBM dengue models & generate validation plots
+# Train LightGBM dengue models & generate forecasts
 python run.py --train-dengue
 
 # Run 2-year dengue forecast & plots
