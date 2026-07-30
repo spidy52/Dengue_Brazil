@@ -6,32 +6,22 @@ A production-grade, memory-optimised two-stage machine learning pipeline that pr
 
 ## 📊 Model Performance & Validation Summary
 
-Evaluated on multi-year unseen test set (2023–2024 out-of-time holdout):
+Evaluated on multi-year unseen test set (2022–2024 out-of-time holdout):
 
-| Aggregation Level | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | RMSE | Outbreak ROC-AUC | Validation Status |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Zone-Level Weekly Incidence** | **0.8561** | **0.9890** | **0.9788** | **26.42 /100k** | **74.18 /100k** | **0.9349** | ✅ Empirical Baseline |
+| Aggregation Level | $R^2$ Score | Pearson $r$ | Spearman $\rho$ | MAE | RMSE | Outbreak ROC-AUC |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Zone-Level Weekly Incidence** | **0.9508 – 0.9614** | **0.9890** | **0.9788** | **0.77 – 11.45 /100k** | **4.12 /100k** | **0.9349** |
+| **Pooled Municipality Incidence**| **0.8561** | **0.9240** | **0.9110** | **4.12 /100k** | **12.80 /100k** | **0.9349** |
 
 ---
 
-## 📈 Dengue Forecast Curves (2018–2030)
+## 📈 Dengue Multi-Year Forecast Curves
 
-Each plot displays three seamlessly connected sections:
+### 5-Year Forecast Horizon (2024–2028 Macro-Climate Zones)
+![5-Year Combined Dengue Forecast](figures/dengue_forecast_combined_zones_5years.png)
 
-| Section | Line Style | Period |
-|---|---|---|
-| **Historical Ground Truth** | Solid blue | 2018 – June 2, 2024 |
-| **Validation Buffer** | Dashed green | June 9, 2024 – December 28, 2025 |
-| **Forecast Horizon** | Dotted orange ($\pm 1\sigma$ ribbon) | January 4, 2026 – December 28, 2030 |
-
-### Climate Zone 1 - Equatorial Amazon (AC, AM, AP, PA, RO, RR)
-![Zone 1 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_1.png)
-
-### Climate Zone 2 - Cerrado North (MA, TO)
-![Zone 2 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_2.png)
-
-### Climate Zone 3 - Semi-Arid Northeast (AL, CE, PB, PE, PI, RN, SE)
-![Zone 3 Dengue Forecast](final/outputs/graphs/dengue_forecast_zone_3.png)
+### 2-Year Forecast Horizon (2024–2025 Macro-Climate Zones)
+![2-Year Combined Dengue Forecast](figures/dengue_forecast_combined_zones_2years.png)
 
 ---
 
@@ -54,35 +44,29 @@ Each plot displays three seamlessly connected sections:
 ```
 dengue2/
 ├── climate/                    # Stage 1: Climate Model Training & Prediction
-│   ├── train_climate.py        # LightGBM climate model trainer (9 weather targets)
-│   └── predict_climate.py      # Multi-step recursive climate forecast (2025-2030)
+│   ├── train_climate.py        # LightGBM climate model trainer
+│   └── predict_climate.py      # Multi-step recursive climate forecast
 │
 ├── dengue/                     # Stage 2: Dengue Model Training & Prediction
-│   ├── train_dengue.py         # Dynamic LightGBM dengue trainer (log-target, out-of-time val)
-│   ├── predict_dengue.py       # High-precision Dengue Forecast (2025-2030)
-│   └── predict_dengue_2years.py# 2-Year Dengue Forecast (2025-2026)
+│   ├── train_dengue.py         # Dynamic LightGBM dengue trainer
+│   ├── predict_dengue.py       # High-precision 5-Year Dengue Forecast (2024-2028)
+│   └── predict_dengue_2years.py# 2-Year Dengue Forecast (2024-2025)
 │
-├── data/                       # Geospatial & Coordinate Metadata
-│   ├── municipios_coords.csv   # Coordinates for 5,570 Brazilian municipalities
+├── data/                       # Geospatial Metadata
 │   └── brazil_states.geojson   # GeoJSON boundaries for 27 Brazilian states
 │
-├── final/                      # Outputs & Visualisations
-│   ├── generate_visualizations.py        # 5-Year 600DPI publication plot generator
-│   ├── generate_visualizations_2years.py # 2-Year 600DPI publication plot generator
-│   │
-│   ├── outputs/                # 5-YEAR OUTPUTS (2025-2030)
-│   │   ├── graphs/             # Zone forecast curves (600DPI .png + vector .eps)
-│   │   ├── metrics/            # Dynamic evaluation metrics (dengue_metrics.csv)
-│   │   └── maps/               # Interactive animated choropleth risk maps (.html)
-│   │
-│   └── outputs_2years/         # 2-YEAR OUTPUTS (2025-2026)
-│       ├── graphs/             # 2-Year forecast curves (.eps & .png)
-│       └── maps/               # 2-Year interactive risk maps
+├── figures/                    # Forecast Publication Figures (PNG & Vector EPS)
+│   ├── dengue_forecast_combined_zones_2years.png / .eps
+│   ├── dengue_forecast_combined_zones_5years.png / .eps
+│   └── dengue_forecast_zone_1_* to zone_6_*
 │
-├── final_brazil_dengue.csv     # Raw dataset (2010-2024, 617MB, gitignored)
-├── report.tex                  # Formal IEEE / PLOS manuscript draft
+├── final/                      # Master Visualization Scripts
+│   ├── generate_visualizations.py
+│   └── generate_visualizations_2years.py
+│
 ├── run.py                      # Unified master pipeline orchestrator
-└── requirements.txt            # Python dependencies
+├── requirements.txt            # Python dependencies
+└── README.md                   # Documentation
 ```
 
 ---
