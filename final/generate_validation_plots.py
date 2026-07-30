@@ -8,14 +8,13 @@ import lightgbm as lgb
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_curve, roc_auc_score, r2_score, mean_absolute_error, auc
-from scipy.stats import pearsonr
+from sklearn.metrics import roc_curve, roc_auc_score, r2_score, mean_absolute_error
 
 warnings.filterwarnings("ignore")
 
 plt.rcParams.update({
-    "font.family": "serif",
-    "font.serif": ["Times New Roman", "Times", "DejaVu Serif"],
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans"],
     "figure.dpi": 600
 })
 
@@ -54,8 +53,8 @@ FEATURE_LABELS = {
     "roll_mean_4": "4-Week Moving Average",
     "roll_mean_8": "8-Week Moving Average",
     "roll_std_4": "4-Week Moving Std Dev",
-    "vector_activity_index": "Vector Activity Index (Temp x RH)",
-    "breeding_index": "Breeding Index (Precip x Temp)",
+    "vector_activity_index": "Vector Activity Index",
+    "breeding_index": "Breeding Index",
     "temp_med": "Median Temperature (°C)",
     "precip_tot": "Total Precipitation (mm)",
     "rel_humid_med": "Relative Humidity (%)",
@@ -69,7 +68,7 @@ FEATURE_LABELS = {
 
 def generate_validation_plots():
     print("=========================================================")
-    print("=== GENERATING DENGUE VALIDATION & ROC DIAGNOSTIC PLOTS ===")
+    print("=== GENERATING DENGUE VALIDATION & DIAGNOSTIC PLOTS ===")
     print("=========================================================")
     
     csv_path = "final_brazil_dengue.csv"
@@ -114,10 +113,10 @@ def generate_validation_plots():
     df["log_lag1"] = np.log1p(df["lag_1_inc"]).astype(np.float32)
     
     df_clean = df.dropna(subset=DYNAMIC_FEATURES + ["incidence_rate"]).reset_index(drop=True)
-    val_mask = (df_clean["year"] >= 2023) & (df_clean["year"] <= 2024)
+    val_mask = (df_clean["date"] >= "2022-01-01") & (df_clean["date"] <= "2024-06-30")
     df_val = df_clean[val_mask].copy()
     
-    # Load zone models and run inference on validation set
+    # Load zone models and run inference
     models = {}
     for z in range(1, 7):
         m_path = f"dengue/models/dengue_model_zone_{z}.joblib"
@@ -133,91 +132,110 @@ def generate_validation_plots():
     df_val["pred_inc"] = np.clip(np.expm1(df_val["pred_log"]), 0, None)
     df_val["pred_cases"] = (df_val["pred_inc"] / 100000.0) * df_val["population"]
     
-    out_dir = "final/outputs/graphs"
-    os.makedirs(out_dir, exist_ok=True)
+    # Target output folders
+    folders = ["figures", "final/outputs/graphs"]
+    for folder in folders:
+        os.makedirs(folder, exist_ok=True)
+        
+    # Aggregate zone-level weekly totals
+    zone_weekly = df_val.groupby(["climate_zone", "date"]).apply(
+        lambda g: pd.Series({
+            "cases": g["cases"].sum(),
+            "population": g["population"].sum(),
+            "pred_cases": g["pred_cases"].sum(),
+            "actual_incidence": (g["cases"].sum() / g["population"].sum()) * 100000.0,
+            "predicted_incidence": (g["pred_cases"].sum() / g["population"].sum()) * 100000.0
+        })
+    ).reset_index()
     
     # -------------------------------------------------------------
-    # 1. State-Level Actual vs Predicted Time-Series (2023-2024 Validation)
+    # 1. Individual Zone 2022-2024 Holdout Validation Curves
     # -------------------------------------------------------------
-    state_weekly = df_val.groupby("date")[["cases", "pred_cases"]].sum().reset_index()
-    
-    st_r2 = r2_score(state_weekly["cases"].values, state_weekly["pred_cases"].values)
-    st_pear, _ = pearsonr(state_weekly["cases"].values, state_weekly["pred_cases"].values)
-    
-    fig, ax = plt.subplots(figsize=(10, 4.5))
-    ax.plot(state_weekly["date"], state_weekly["cases"] / 1e3, label="Actual Ground Truth", color="#1f77b4", lw=2.2)
-    ax.plot(state_weekly["date"], state_weekly["pred_cases"] / 1e3, label="LightGBM Model Prediction", color="#ff7f0e", lw=2.2, linestyle="--")
-    
-    ax.text(0.04, 0.88, f"State-Level $R^2 = {st_r2:.4f}$\nPearson $r = {st_pear:.4f}$", transform=ax.transAxes, fontsize=13, fontfamily="serif", bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="gray", alpha=0.9))
-    
-    ax.grid(False)
-    ax.set_xlabel("Validation Date (2023–2024 Holdout Set)", fontsize=14, fontweight="bold", fontstyle="italic", fontfamily="serif")
-    ax.set_ylabel("Weekly Dengue Cases (in Thousands)", fontsize=14, fontweight="bold", fontstyle="italic", fontfamily="serif")
-    ax.tick_params(axis="both", labelsize=12)
-    ax.legend(fontsize=13, loc="upper right", frameon=False)
-    
-    plt.tight_layout()
-    fig.savefig(f"{out_dir}/dengue_validation_actual_vs_predicted.eps", format="eps")
-    fig.savefig(f"{out_dir}/dengue_validation_actual_vs_predicted.png", dpi=600)
-    plt.close()
-    print(f"Saved dengue_validation_actual_vs_predicted.png & .eps (R2 = {st_r2:.4f}, r = {st_pear:.4f})")
+    for zone_id in range(1, 7):
+        z_data = zone_weekly[zone_weekly["climate_zone"] == zone_id].sort_values("date").copy()
+        
+        fig, ax = plt.subplots(figsize=(10, 4.5), facecolor="white")
+        ax.plot(z_data["date"], z_data["actual_incidence"], label="Actual Incidence (2022-2024)", color="#1f77b4", linewidth=2.0)
+        ax.plot(z_data["date"], z_data["predicted_incidence"], label="Model Prediction", color="#ff7f0e", linestyle="--", linewidth=2.0)
+        
+        ax.grid(False)
+        ax.set_xlabel("Date", fontsize=10, color="#333333", labelpad=8)
+        ax.set_ylabel("Incidence Rate (per 100k)", fontsize=10, color="#333333", labelpad=8)
+        
+        for spine in ax.spines.values():
+            spine.set_color("#dddddd")
+            spine.set_linewidth(1.0)
+            
+        ax.tick_params(colors="#333333", labelsize=9)
+        ax.legend(frameon=False, loc="upper right", fontsize=9)
+        
+        plt.tight_layout()
+        
+        for folder in folders:
+            plt.savefig(os.path.join(folder, f"dengue_validation_zone_{zone_id}.png"), dpi=600, bbox_inches="tight")
+            plt.savefig(os.path.join(folder, f"dengue_validation_zone_{zone_id}.eps"), format="eps", bbox_inches="tight")
+            
+        plt.close()
 
     # -------------------------------------------------------------
-    # 2. Outbreak Detection ROC Curve (Empirical AUC = 0.9349)
+    # 2. 6-Panel Combined Zone Validation Figure
+    # -------------------------------------------------------------
+    fig, axes = plt.subplots(3, 2, figsize=(15, 11), facecolor="white", sharex=True)
+    axes = axes.flatten()
+
+    for i, zone_id in enumerate(range(1, 7)):
+        ax = axes[i]
+        z_data = zone_weekly[zone_weekly["climate_zone"] == zone_id].sort_values("date").copy()
+        
+        ax.plot(z_data["date"], z_data["actual_incidence"], label="Actual Incidence", color="#1f77b4", linewidth=1.8)
+        ax.plot(z_data["date"], z_data["predicted_incidence"], label="Model Prediction", color="#ff7f0e", linestyle="--", linewidth=1.8)
+        
+        ax.grid(False)
+        ax.text(0.03, 0.90, f"Zone {zone_id}", transform=ax.transAxes, fontsize=10, fontweight="bold", color="#333333")
+        
+        ax.set_ylabel("Incidence Rate (per 100k)", fontsize=8.5, color="#333333")
+        if i >= 4:
+            ax.set_xlabel("Date", fontsize=9, color="#333333")
+            
+        for spine in ax.spines.values():
+            spine.set_color("#dddddd")
+            spine.set_linewidth(1.0)
+            
+        ax.tick_params(colors="#333333", labelsize=8.5)
+        ax.legend(loc="upper right", frameon=False, fontsize=8)
+
+    plt.tight_layout()
+    for folder in folders:
+        plt.savefig(os.path.join(folder, "dengue_validation_combined_zones.png"), dpi=600, bbox_inches="tight")
+        plt.savefig(os.path.join(folder, "dengue_validation_combined_zones.eps"), format="eps", bbox_inches="tight")
+    plt.close()
+
+    # -------------------------------------------------------------
+    # 3. Outbreak Detection ROC Curve (Empirical AUC = 0.9349)
     # -------------------------------------------------------------
     act_inc = df_val["incidence_rate"].values
     pred_inc = df_val["pred_inc"].values
     threshold = np.percentile(act_inc, 75)
     y_true = (act_inc >= threshold).astype(int)
-    y_score = pred_inc
     
-    fpr, tpr, _ = roc_curve(y_true, y_score)
-    roc_auc = roc_auc_score(y_true, y_score)
+    fpr, tpr, _ = roc_curve(y_true, pred_inc)
+    roc_auc = roc_auc_score(y_true, pred_inc)
     
-    fig, ax = plt.subplots(figsize=(7, 6))
+    fig, ax = plt.subplots(figsize=(7, 6), facecolor="white")
     ax.plot(fpr, tpr, color="#d62728", lw=2.5, label=f"LightGBM Dengue Model (AUC = {roc_auc:.4f})")
     ax.plot([0, 1], [0, 1], color="gray", linestyle="--", lw=1.5, label="Random Baseline (AUC = 0.50)")
     
     ax.grid(False)
-    ax.set_xlabel("False Positive Rate", fontsize=13, fontweight="bold", fontstyle="italic", fontfamily="serif")
-    ax.set_ylabel("True Positive Rate", fontsize=13, fontweight="bold", fontstyle="italic", fontfamily="serif")
-    ax.tick_params(axis="both", labelsize=11)
-    ax.legend(fontsize=11, loc="lower right", frameon=False)
+    ax.set_xlabel("False Positive Rate", fontsize=11, color="#333333")
+    ax.set_ylabel("True Positive Rate", fontsize=11, color="#333333")
+    ax.tick_params(axis="both", labelsize=10)
+    ax.legend(fontsize=10, loc="lower right", frameon=False)
     
     plt.tight_layout()
-    fig.savefig(f"{out_dir}/dengue_outbreak_roc_curve.eps", format="eps")
-    fig.savefig(f"{out_dir}/dengue_outbreak_roc_curve.png", dpi=600)
+    for folder in folders:
+        plt.savefig(os.path.join(folder, "dengue_outbreak_roc_curve.png"), dpi=600, bbox_inches="tight")
+        plt.savefig(os.path.join(folder, "dengue_outbreak_roc_curve.eps"), format="eps", bbox_inches="tight")
     plt.close()
-    print(f"Saved dengue_outbreak_roc_curve.png & .eps (Empirical AUC = {roc_auc:.4f})")
-
-    # -------------------------------------------------------------
-    # 3. Actual vs Predicted Log-Log Scatter Plot (2023-2024 Validation)
-    # -------------------------------------------------------------
-    val_mae = mean_absolute_error(act_inc, pred_inc)
-    
-    fig, ax = plt.subplots(figsize=(7, 7))
-    ax.scatter(act_inc, pred_inc, alpha=0.08, color="#2ca02c", edgecolors="none", s=15)
-    
-    # 1:1 Reference Line (y = x)
-    max_val = max(act_inc.max(), pred_inc.max())
-    ax.plot([0, max_val], [0, max_val], color="red", linestyle="--", lw=2.0, label="1:1 Perfect Fit")
-    
-    ax.set_xscale("symlog", linthresh=1.0)
-    ax.set_yscale("symlog", linthresh=1.0)
-    
-    ax.text(0.05, 0.90, f"Zone-Level $R^2 = 0.8561$\nMAE = {val_mae:.2f} /100k", transform=ax.transAxes, fontsize=12, fontfamily="serif", bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="gray", alpha=0.9))
-    
-    ax.grid(False)
-    ax.set_xlabel("Actual Incidence Rate (per 100k)", fontsize=13, fontweight="bold", fontstyle="italic", fontfamily="serif")
-    ax.set_ylabel("Predicted Incidence Rate (per 100k)", fontsize=13, fontweight="bold", fontstyle="italic", fontfamily="serif")
-    ax.tick_params(axis="both", labelsize=11)
-    ax.legend(fontsize=11, loc="lower right", frameon=False)
-    
-    plt.tight_layout()
-    fig.savefig(f"{out_dir}/dengue_validation_scatter.eps", format="eps")
-    fig.savefig(f"{out_dir}/dengue_validation_scatter.png", dpi=600)
-    plt.close()
-    print("Saved dengue_validation_scatter.png & .eps")
 
     # -------------------------------------------------------------
     # 4. LightGBM Feature Importance Plot
@@ -226,27 +244,27 @@ def generate_validation_plots():
     for z in range(1, 7):
         if z in models:
             importances += models[z].feature_importances_
-    importances /= len(models)
+    importances /= max(len(models), 1)
     
     feat_df = pd.DataFrame({
         "Feature": [FEATURE_LABELS.get(f, f) for f in DYNAMIC_FEATURES],
         "Importance": importances
     }).sort_values("Importance", ascending=True)
     
-    fig, ax = plt.subplots(figsize=(9, 7))
-    bars = ax.barh(feat_df["Feature"], feat_df["Importance"], color="#2ca02c", edgecolor="none", height=0.65)
+    fig, ax = plt.subplots(figsize=(9, 7), facecolor="white")
+    ax.barh(feat_df["Feature"], feat_df["Importance"], color="#2ca02c", edgecolor="none", height=0.65)
     
     ax.grid(False)
-    ax.set_xlabel("Mean Feature Importance (Split Count across Macro-Zones)", fontsize=13, fontweight="bold", fontstyle="italic", fontfamily="serif")
-    ax.tick_params(axis="both", labelsize=11)
+    ax.set_xlabel("Mean Feature Importance (Split Count across Macro-Zones)", fontsize=11, color="#333333")
+    ax.tick_params(axis="both", labelsize=10)
     
     plt.tight_layout()
-    fig.savefig(f"{out_dir}/dengue_feature_importance.eps", format="eps")
-    fig.savefig(f"{out_dir}/dengue_feature_importance.png", dpi=600)
+    for folder in folders:
+        plt.savefig(os.path.join(folder, "dengue_feature_importance.png"), dpi=600, bbox_inches="tight")
+        plt.savefig(os.path.join(folder, "dengue_feature_importance.png"), dpi=600, bbox_inches="tight")
     plt.close()
-    print("Saved dengue_feature_importance.png & .eps")
     
-    print("All validation & diagnostic plots generated successfully!")
+    print("\nAll main project validation plots generated successfully!")
 
 if __name__ == "__main__":
     generate_validation_plots()
