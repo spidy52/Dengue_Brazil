@@ -5,29 +5,31 @@
 *.csv
 final_brazil_dengue.csv
 
-# Folders to exclude from GitHub repository
+# Ignore scratch and output folders
 scratch/
-figures/
 .tempmediaStorage/
+climate/outputs/
+dengue/outputs/
+final/outputs/
+final/outputs_2years/
 
-# Image & figure formats
+# Ignore non-forecast images in figures/
+figures/*
+!figures/dengue_forecast_*
+
+# Ignore root-level images
 *.png
 *.eps
 *.jpg
 *.jpeg
 *.svg
+!figures/dengue_forecast_*
 
 # Trained model binaries
 *.joblib
 *.pth
 climate/models/
 dengue/models/
-
-# Generated output directories
-climate/outputs/
-dengue/outputs/
-final/outputs/
-final/outputs_2years/
 
 # HTML animations & maps
 *.html
