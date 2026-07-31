@@ -104,10 +104,10 @@ def generate_publication_maps():
     }
     gdf["climate_zone"] = gdf["sigla"].map(state_to_zone)
     
-    # Generate 5-Year and 2-Year Spatial Risk Maps
+    # Generate 5-Year and 2-Year Spatial Risk Maps (with distinct non-colliding filenames)
     for horizon, csv_name, title_text, filename_prefix in [
-        ("5years", "final/outputs/csv/zone_dengue_2025_2030.csv", "5-Year Dengue Spatial Risk Projections (2025–2030)", "dengue_forecast_combined_zones_5years"),
-        ("2years", "final/outputs_2years/csv/zone_dengue_2025_2026.csv", "2-Year Dengue Spatial Risk Projections (2025–2026)", "dengue_forecast_combined_zones_2years")
+        ("5years", "final/outputs/csv/zone_dengue_2025_2030.csv", "5-Year Dengue Spatial Risk Projections (2025–2030)", "dengue_spatial_risk_map_5years"),
+        ("2years", "final/outputs_2years/csv/zone_dengue_2025_2026.csv", "2-Year Dengue Spatial Risk Projections (2025–2026)", "dengue_spatial_risk_map_2years")
     ]:
         if not os.path.exists(csv_name):
             continue
