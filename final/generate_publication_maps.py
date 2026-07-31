@@ -66,12 +66,12 @@ def add_compass_rose(ax, x=0.22, y=0.24, size=0.045):
     for p in [poly_N_E, poly_N_W, poly_S_E, poly_S_W, poly_E_N, poly_E_S, poly_W_N, poly_W_S]:
         ax.add_patch(p)
 
-    # N, E, S, W text labels positioned TIGHT and CLOSE to the star tips
-    off = size + 0.010
-    ax.text(x, y + off, 'N', transform=ax.transAxes, ha='center', va='bottom', fontsize=11, fontweight='bold', color='black', zorder=11)
-    ax.text(x, y - off, 'S', transform=ax.transAxes, ha='center', va='top', fontsize=10, fontweight='bold', color='black', zorder=11)
-    ax.text(x + off, y, 'E', transform=ax.transAxes, ha='left', va='center', fontsize=10, fontweight='bold', color='black', zorder=11)
-    ax.text(x - off, y, 'W', transform=ax.transAxes, ha='right', va='center', fontsize=10, fontweight='bold', color='black', zorder=11)
+    # N, E, S, W text labels positioned EXTREMELY CLOSE (hugging) to the star tips
+    off = size + 0.002
+    ax.text(x, y + off, 'N', transform=ax.transAxes, ha='center', va='bottom', fontsize=10, fontweight='bold', color='black', zorder=11)
+    ax.text(x, y - off, 'S', transform=ax.transAxes, ha='center', va='top', fontsize=9, fontweight='bold', color='black', zorder=11)
+    ax.text(x + off, y, 'E', transform=ax.transAxes, ha='left', va='center', fontsize=9, fontweight='bold', color='black', zorder=11)
+    ax.text(x - off, y, 'W', transform=ax.transAxes, ha='right', va='center', fontsize=9, fontweight='bold', color='black', zorder=11)
 
     # Scale bar below 'S'
     sb_y = y - off - 0.045
