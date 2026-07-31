@@ -109,8 +109,8 @@ def generate_visualizations_2years():
         fig.savefig(f"{out_dir_2yr}/dengue_forecast_zone_{zone}.eps", format="eps", bbox_inches="tight")
         plt.close()
 
-    # 6-Panel Combined 2-Year Plot
-    fig, axes = plt.subplots(3, 2, figsize=(15, 11), facecolor="white", sharex=True)
+    # 6-Panel Combined 2-Year Plot in 2 ROWS x 3 COLUMNS (2x3) Grid
+    fig, axes = plt.subplots(2, 3, figsize=(18, 8.5), facecolor="white", sharex=True)
     axes = axes.flatten()
     zone_names = {
         1: "Zone 1 (Equatorial Amazon)", 2: "Zone 2 (Cerrado North)",
@@ -154,8 +154,8 @@ def generate_visualizations_2years():
         ax.grid(False)
         ax.text(0.03, 0.90, zone_names[z], transform=ax.transAxes, fontsize=9.5, fontweight="bold", color="#333333")
         ax.set_ylabel("Incidence Rate (per 100k)", fontsize=8.5, color="#333333")
-        if i >= 4:
-            ax.set_xlabel("Date", fontsize=9, color="#333333")
+        if i >= 3:
+            ax.set_xlabel("Date", fontsize=9.5, fontweight="bold", color="#333333")
         ax.tick_params(colors="#333333", labelsize=8.5)
         ax.legend(loc="upper right", frameon=False, fontsize=8)
 

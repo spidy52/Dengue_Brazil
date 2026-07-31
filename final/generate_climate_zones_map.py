@@ -91,8 +91,8 @@ def generate_climate_zones_map():
     except Exception as e:
         print("World map fetch notice:", e)
         
-    # Always highlight Brazil in vibrant green (#3e9668) on the world map inset
-    gdf.plot(ax=ax_world, color="#3e9668", edgecolor="#2d724e", lw=0.4, zorder=5)
+    # Highlight Brazil as a single solid green (#3e9668) country shape on World Map inset (no internal state lines)
+    gdf.dissolve().plot(ax=ax_world, color="#3e9668", edgecolor="none", zorder=5)
         
     ax_world.set_xlim(-170, 180)
     ax_world.set_ylim(-60, 85)
