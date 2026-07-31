@@ -54,6 +54,7 @@ def generate_visualizations():
     os.makedirs(out_dir_5yr, exist_ok=True)
     os.makedirs("figures", exist_ok=True)
     
+    # 1. Individual 6 Zone Forecast Plots
     for zone in range(1, 7):
         hz = zone_weekly[zone_weekly["climate_zone"] == float(zone)].sort_values("date").copy()
         hz_actual = hz[(hz["date"].dt.year >= 2018) & (hz["date"] <= pd.to_datetime("2024-06-02"))].copy()
@@ -82,7 +83,6 @@ def generate_visualizations():
         lower_fut = (df_fut["incidence_rate"] - df_fut["sigma"]).clip(0)
         upper_fut = df_fut["incidence_rate"] + df_fut["sigma"]
         
-        # Darker smooth shaded ribbon WITHOUT outline lines
         ax.fill_between(df_fut["date"], lower_fut, upper_fut, color="#ff7f0e", alpha=0.35, edgecolor="none", label="Forecast +/-1sigma")
         
         ax.axvline(x=pd.to_datetime("2024-06-02"), color="gray", linestyle=":", lw=1.2)
@@ -109,7 +109,45 @@ def generate_visualizations():
         fig.savefig(f"{out_dir_5yr}/dengue_forecast_zone_{zone}.eps", format="eps", bbox_inches="tight")
         plt.close()
 
-    # 6-Panel Combined 5-Year Plot in 2 ROWS x 3 COLUMNS (2x3) Grid
+    # 2. Single Overlaid Multi-Zone Plot ("Dengue Incidence Forecast by Climate Zone (2025–2030)")
+    fig, ax = plt.subplots(figsize=(13, 6), facecolor="white")
+    zone_colors = {
+        1: "#1f77b4",  # Blue
+        2: "#ff7f0e",  # Orange
+        3: "#2ca02c",  # Green
+        4: "#d62728",  # Red
+        5: "#9467bd",  # Purple
+        6: "#8c564b"   # Brown
+    }
+    
+    for z in range(1, 7):
+        z_fore = df_forecast[df_forecast["climate_zone"] == float(z)].sort_values("date").copy()
+        color = zone_colors[z]
+        
+        ax.plot(z_fore["date"], z_fore["incidence_rate"], label=f"Zone {z}", color=color, lw=2.0)
+        lower = (z_fore["incidence_rate"] - z_fore["sigma"]).clip(0)
+        upper = z_fore["incidence_rate"] + z_fore["sigma"]
+        ax.fill_between(z_fore["date"], lower, upper, color=color, alpha=0.18, edgecolor="none")
+        
+    for spine in ax.spines.values():
+        spine.set_linewidth(2.0)
+        spine.set_color("#000000")
+        
+    ax.grid(True, linestyle=":", alpha=0.3, color="#cccccc")
+    ax.set_title("Dengue Incidence Forecast by Climate Zone (2025–2030)", fontsize=14, fontweight="bold", pad=12)
+    ax.set_xlabel("Date", fontsize=12, fontweight="bold")
+    ax.set_ylabel("Incidence Rate (per 100k)", fontsize=12, fontweight="bold")
+    ax.tick_params(axis="both", labelsize=11)
+    ax.legend(title="Climate Zone", loc="upper right", frameon=True, facecolor="#ffffff", edgecolor="#cccccc", fontsize=10)
+    
+    plt.tight_layout()
+    plt.savefig("figures/dengue_forecast_overlay_5years.png", dpi=600, bbox_inches="tight")
+    plt.savefig(f"{out_dir_5yr}/dengue_forecast_overlay_5years.png", dpi=600, bbox_inches="tight")
+    plt.savefig(f"{out_dir_5yr}/dengue_forecast_overlay_5years.pdf", bbox_inches="tight")
+    plt.savefig(f"{out_dir_5yr}/dengue_forecast_overlay_5years.eps", format="eps", bbox_inches="tight")
+    plt.close()
+
+    # 3. 6-Panel Combined 5-Year Plot in 2 ROWS x 3 COLUMNS (2x3 Grid)
     fig, axes = plt.subplots(2, 3, figsize=(18, 8.5), facecolor="white", sharex=True)
     axes = axes.flatten()
     zone_names = {
@@ -141,7 +179,6 @@ def generate_visualizations():
         lower_fut = (df_fut["incidence_rate"] - df_fut["sigma"]).clip(0)
         upper_fut = df_fut["incidence_rate"] + df_fut["sigma"]
         
-        # Darker smooth shaded ribbon WITHOUT outline lines
         ax.fill_between(df_fut["date"], lower_fut, upper_fut, color="#ff7f0e", alpha=0.35, edgecolor="none", label="Forecast +/-1sigma")
         
         ax.axvline(x=pd.to_datetime("2024-06-02"), color="gray", linestyle=":", lw=1.0)
