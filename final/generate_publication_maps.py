@@ -67,22 +67,22 @@ def add_compass_rose(ax, x=0.22, y=0.24, size=0.045):
         ax.add_patch(p)
 
     # N, E, S, W text labels positioned EXTREMELY CLOSE (hugging) to the star tips
-    off = size + 0.002
-    ax.text(x, y + off, 'N', transform=ax.transAxes, ha='center', va='bottom', fontsize=10, fontweight='bold', color='black', zorder=11)
-    ax.text(x, y - off, 'S', transform=ax.transAxes, ha='center', va='top', fontsize=9, fontweight='bold', color='black', zorder=11)
-    ax.text(x + off, y, 'E', transform=ax.transAxes, ha='left', va='center', fontsize=9, fontweight='bold', color='black', zorder=11)
-    ax.text(x - off, y, 'W', transform=ax.transAxes, ha='right', va='center', fontsize=9, fontweight='bold', color='black', zorder=11)
+    off = size + 0.0015
+    ax.text(x, y + off, 'N', transform=ax.transAxes, ha='center', va='bottom', fontsize=8.5, fontweight='bold', color='black', zorder=11)
+    ax.text(x, y - off, 'S', transform=ax.transAxes, ha='center', va='top', fontsize=8.0, fontweight='bold', color='black', zorder=11)
+    ax.text(x + off, y, 'E', transform=ax.transAxes, ha='left', va='center', fontsize=8.0, fontweight='bold', color='black', zorder=11)
+    ax.text(x - off, y, 'W', transform=ax.transAxes, ha='right', va='center', fontsize=8.0, fontweight='bold', color='black', zorder=11)
 
     # Scale bar below 'S'
-    sb_y = y - off - 0.045
-    ax.plot([x - 0.04, x + 0.04], [sb_y, sb_y], color='black', lw=1.8, transform=ax.transAxes, zorder=11)
-    ax.plot([x - 0.04, x - 0.04], [sb_y, sb_y + 0.008], color='black', lw=1.5, transform=ax.transAxes, zorder=11)
-    ax.plot([x, x], [sb_y, sb_y + 0.008], color='black', lw=1.5, transform=ax.transAxes, zorder=11)
-    ax.plot([x + 0.04, x + 0.04], [sb_y, sb_y + 0.008], color='black', lw=1.5, transform=ax.transAxes, zorder=11)
+    sb_y = y - off - 0.035
+    ax.plot([x - 0.03, x + 0.03], [sb_y, sb_y], color='black', lw=1.5, transform=ax.transAxes, zorder=11)
+    ax.plot([x - 0.03, x - 0.03], [sb_y, sb_y + 0.006], color='black', lw=1.2, transform=ax.transAxes, zorder=11)
+    ax.plot([x, x], [sb_y, sb_y + 0.006], color='black', lw=1.2, transform=ax.transAxes, zorder=11)
+    ax.plot([x + 0.03, x + 0.03], [sb_y, sb_y + 0.006], color='black', lw=1.2, transform=ax.transAxes, zorder=11)
     
-    ax.text(x - 0.04, sb_y - 0.012, '0', transform=ax.transAxes, ha='center', va='top', fontsize=8, fontweight='bold', color='black', zorder=11)
-    ax.text(x, sb_y - 0.012, '500', transform=ax.transAxes, ha='center', va='top', fontsize=8, fontweight='bold', color='black', zorder=11)
-    ax.text(x + 0.04, sb_y - 0.012, '1000 km', transform=ax.transAxes, ha='center', va='top', fontsize=8, fontweight='bold', color='black', zorder=11)
+    ax.text(x - 0.03, sb_y - 0.010, '0', transform=ax.transAxes, ha='center', va='top', fontsize=7.5, fontweight='bold', color='black', zorder=11)
+    ax.text(x, sb_y - 0.010, '500', transform=ax.transAxes, ha='center', va='top', fontsize=7.5, fontweight='bold', color='black', zorder=11)
+    ax.text(x + 0.03, sb_y - 0.010, '1000 km', transform=ax.transAxes, ha='center', va='top', fontsize=7.5, fontweight='bold', color='black', zorder=11)
 
 def generate_publication_maps():
     print("=========================================================")
@@ -145,7 +145,7 @@ def generate_publication_maps():
         cbar.outline.set_linewidth(1.5)
         
         # Add Compass Rose Star Pointer with N, E, S, W tight to star and 500 1000 km scale bar
-        add_compass_rose(ax, x=0.22, y=0.24, size=0.045)
+        add_compass_rose(ax, x=0.12, y=0.20, size=0.032)
         
         plt.tight_layout()
         
