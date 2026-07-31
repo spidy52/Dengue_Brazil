@@ -9,7 +9,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon as MplPolygon
-from matplotlib.collections import PatchCollection
 
 plt.rcParams.update({
     "font.family": "serif",
@@ -44,38 +43,50 @@ def download_brazil_geojson():
         print("Error downloading Brazil states GeoJSON:", e)
         return None
 
-def add_compass_rose(ax, x=0.12, y=0.20, scale=0.035):
+def add_compass_rose(ax, x=0.22, y=0.24, size=0.045):
     """
-    Draws a 4-point compass rose star pointer on the plot axes,
-    with 'N', 'E', 'S', 'W' text labels positioned tight and close to the star pointer.
+    Draws an authentic 4-pointed shaded star compass rose with N, E, S, W
+    text labels positioned tight and close to the star points, plus a 500-1000 km scale bar.
     """
-    # Draw North Star pointer arrow
-    ax.annotate('', xy=(x, y + scale), xytext=(x, y),
-                xycoords='axes fraction', textcoords='axes fraction',
-                arrowprops=dict(facecolor='black', edgecolor='black', width=1.5, headwidth=6, headlength=7))
-    # Draw South arm
-    ax.annotate('', xy=(x, y - scale), xytext=(x, y),
-                xycoords='axes fraction', textcoords='axes fraction',
-                arrowprops=dict(facecolor='#555555', edgecolor='black', width=1.0, headwidth=4, headlength=5))
-    # Draw East arm
-    ax.annotate('', xy=(x + scale, y), xytext=(x, y),
-                xycoords='axes fraction', textcoords='axes fraction',
-                arrowprops=dict(facecolor='#555555', edgecolor='black', width=1.0, headwidth=4, headlength=5))
-    # Draw West arm
-    ax.annotate('', xy=(x - scale, y), xytext=(x, y),
-                xycoords='axes fraction', textcoords='axes fraction',
-                arrowprops=dict(facecolor='#555555', edgecolor='black', width=1.0, headwidth=4, headlength=5))
+    inner = size * 0.22
+
+    # Polygons for 4-point shaded star
+    poly_N_E = MplPolygon([[x, y], [x, y + size], [x + inner, y + inner]], facecolor='#0b1d3a', edgecolor='#000000', lw=0.8, transform=ax.transAxes, zorder=10)
+    poly_N_W = MplPolygon([[x, y], [x, y + size], [x - inner, y + inner]], facecolor='#ffffff', edgecolor='#000000', lw=0.8, transform=ax.transAxes, zorder=10)
     
-    # N, E, S, W text labels positioned VERY CLOSE to the star pointer arms
-    offset = scale + 0.012
-    ax.text(x, y + offset, 'N', transform=ax.transAxes, ha='center', va='bottom', fontsize=9, fontweight='bold', color='black')
-    ax.text(x, y - offset, 'S', transform=ax.transAxes, ha='center', va='top', fontsize=8, fontweight='bold', color='black')
-    ax.text(x + offset, y, 'E', transform=ax.transAxes, ha='left', va='center', fontsize=8, fontweight='bold', color='black')
-    ax.text(x - offset, y, 'W', transform=ax.transAxes, ha='right', va='center', fontsize=8, fontweight='bold', color='black')
+    poly_S_E = MplPolygon([[x, y], [x, y - size], [x + inner, y - inner]], facecolor='#ffffff', edgecolor='#000000', lw=0.8, transform=ax.transAxes, zorder=10)
+    poly_S_W = MplPolygon([[x, y], [x, y - size], [x - inner, y - inner]], facecolor='#0b1d3a', edgecolor='#000000', lw=0.8, transform=ax.transAxes, zorder=10)
+
+    poly_E_N = MplPolygon([[x, y], [x + size, y], [x + inner, y + inner]], facecolor='#ffffff', edgecolor='#000000', lw=0.8, transform=ax.transAxes, zorder=10)
+    poly_E_S = MplPolygon([[x, y], [x + size, y], [x + inner, y - inner]], facecolor='#0b1d3a', edgecolor='#000000', lw=0.8, transform=ax.transAxes, zorder=10)
+
+    poly_W_N = MplPolygon([[x, y], [x - size, y], [x - inner, y + inner]], facecolor='#0b1d3a', edgecolor='#000000', lw=0.8, transform=ax.transAxes, zorder=10)
+    poly_W_S = MplPolygon([[x, y], [x - size, y], [x - inner, y - inner]], facecolor='#ffffff', edgecolor='#000000', lw=0.8, transform=ax.transAxes, zorder=10)
+
+    for p in [poly_N_E, poly_N_W, poly_S_E, poly_S_W, poly_E_N, poly_E_S, poly_W_N, poly_W_S]:
+        ax.add_patch(p)
+
+    # N, E, S, W text labels positioned TIGHT and CLOSE to the star tips
+    off = size + 0.010
+    ax.text(x, y + off, 'N', transform=ax.transAxes, ha='center', va='bottom', fontsize=11, fontweight='bold', color='black', zorder=11)
+    ax.text(x, y - off, 'S', transform=ax.transAxes, ha='center', va='top', fontsize=10, fontweight='bold', color='black', zorder=11)
+    ax.text(x + off, y, 'E', transform=ax.transAxes, ha='left', va='center', fontsize=10, fontweight='bold', color='black', zorder=11)
+    ax.text(x - off, y, 'W', transform=ax.transAxes, ha='right', va='center', fontsize=10, fontweight='bold', color='black', zorder=11)
+
+    # Scale bar below 'S'
+    sb_y = y - off - 0.045
+    ax.plot([x - 0.04, x + 0.04], [sb_y, sb_y], color='black', lw=1.8, transform=ax.transAxes, zorder=11)
+    ax.plot([x - 0.04, x - 0.04], [sb_y, sb_y + 0.008], color='black', lw=1.5, transform=ax.transAxes, zorder=11)
+    ax.plot([x, x], [sb_y, sb_y + 0.008], color='black', lw=1.5, transform=ax.transAxes, zorder=11)
+    ax.plot([x + 0.04, x + 0.04], [sb_y, sb_y + 0.008], color='black', lw=1.5, transform=ax.transAxes, zorder=11)
+    
+    ax.text(x - 0.04, sb_y - 0.012, '0', transform=ax.transAxes, ha='center', va='top', fontsize=8, fontweight='bold', color='black', zorder=11)
+    ax.text(x, sb_y - 0.012, '500', transform=ax.transAxes, ha='center', va='top', fontsize=8, fontweight='bold', color='black', zorder=11)
+    ax.text(x + 0.04, sb_y - 0.012, '1000 km', transform=ax.transAxes, ha='center', va='top', fontsize=8, fontweight='bold', color='black', zorder=11)
 
 def generate_publication_maps():
     print("=========================================================")
-    print("=== GENERATING PUBLICATION MAPS WITH THICK AXES & COMPASS ===")
+    print("=== GENERATING PUBLICATION MAPS WITH THICK AXES & TIGHT COMPASS ===")
     print("=========================================================")
     
     geojson_path = download_brazil_geojson()
@@ -110,6 +121,11 @@ def generate_publication_maps():
         # Plot Brazil map with choropleth shading
         gdf.plot(column="mean_inc", cmap="YlOrRd", linewidth=1.2, edgecolor="#333333", ax=ax, legend=False)
         
+        # Add state acronym annotations (e.g. RJ, SP, MG, BA, AM)
+        for _, row in gdf.iterrows():
+            centroid = row.geometry.centroid
+            ax.text(centroid.x, centroid.y, row["sigla"], fontsize=7.5, fontweight="bold", color="#111111", ha="center", va="center", zorder=8)
+        
         # Add thicker axis border
         for spine in ax.spines.values():
             spine.set_linewidth(2.2)
@@ -128,8 +144,8 @@ def generate_publication_maps():
         cbar.ax.tick_params(labelsize=9, width=1.5)
         cbar.outline.set_linewidth(1.5)
         
-        # Add Compass Rose Star Pointer at bottom left with N, E, S, W close to star
-        add_compass_rose(ax, x=0.14, y=0.18, scale=0.035)
+        # Add Compass Rose Star Pointer with N, E, S, W tight to star and 500 1000 km scale bar
+        add_compass_rose(ax, x=0.22, y=0.24, size=0.045)
         
         plt.tight_layout()
         
