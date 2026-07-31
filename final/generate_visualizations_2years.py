@@ -13,12 +13,12 @@ plt.rcParams.update({
     "font.serif": ["Times New Roman", "Times", "DejaVu Serif"],
     "figure.dpi": 600,
     "savefig.dpi": 600,
-    "axes.linewidth": 2.2,
+    "axes.linewidth": 2.0,
     "axes.edgecolor": "#000000",
-    "xtick.major.width": 1.8,
-    "ytick.major.width": 1.8,
-    "xtick.major.size": 6,
-    "ytick.major.size": 6
+    "xtick.major.width": 1.5,
+    "ytick.major.width": 1.5,
+    "xtick.major.size": 5,
+    "ytick.major.size": 5
 })
 
 def generate_visualizations_2years():
@@ -82,8 +82,8 @@ def generate_visualizations_2years():
         lower_fut = (df_fut["incidence_rate"] - df_fut["sigma"]).clip(0)
         upper_fut = df_fut["incidence_rate"] + df_fut["sigma"]
         
-        ax.plot(df_fut["date"], lower_fut, color="#ff7f0e", lw=1.0, linestyle="--")
-        ax.plot(df_fut["date"], upper_fut, color="#ff7f0e", lw=1.0, linestyle="--")
+        # Smooth shaded ribbon WITHOUT outline lines
+        ax.fill_between(df_fut["date"], lower_fut, upper_fut, color="#ffe5d0", alpha=0.6, edgecolor="none", label="Forecast +/-1sigma")
         
         ax.axvline(x=pd.to_datetime("2024-06-02"), color="gray", linestyle=":", lw=1.2)
         ax.axvline(x=pd.to_datetime("2025-12-31"), color="red", linestyle="--", lw=1.2)
@@ -91,6 +91,10 @@ def generate_visualizations_2years():
         y_max = max(hz_actual["true_incidence_rate"].max(), df_val_2025["incidence_rate"].max(), df_fut["incidence_rate"].max()) * 1.05
         ax.text(pd.to_datetime("2024-06-10"), y_max * 0.92, "Forecast ->", color="gray", fontsize=11, fontfamily="serif")
         
+        for spine in ax.spines.values():
+            spine.set_linewidth(2.0)
+            spine.set_color("#000000")
+            
         ax.grid(False)
         ax.set_xlabel("Date", fontsize=14, fontweight="bold", fontstyle="italic", fontfamily="serif")
         ax.set_ylabel("Incidence Rate (per 100k)", fontsize=14, fontweight="bold", fontstyle="italic", fontfamily="serif")
@@ -99,17 +103,10 @@ def generate_visualizations_2years():
         
         plt.tight_layout()
         
-        # Save EPS vector format (clean vector bounds, NO PostScript alpha fill artifacts)
-        fig.savefig(f"{out_dir_2yr}/dengue_forecast_zone_{zone}.eps", format="eps", bbox_inches="tight")
-        fig.savefig(f"figures/dengue_forecast_zone_{zone}_2years.eps", format="eps", bbox_inches="tight")
-        
-        # Add smooth fill for PNG and PDF exports
-        ax.fill_between(df_fut["date"], lower_fut, upper_fut, color="#ff7f0e", alpha=0.25, label="Forecast ±1σ Band")
-        ax.legend(fontsize=12, loc="upper right", frameon=False)
-        
         fig.savefig(f"{out_dir_2yr}/dengue_forecast_zone_{zone}.png", dpi=600, bbox_inches="tight")
         fig.savefig(f"figures/dengue_forecast_zone_{zone}_2years.png", dpi=600, bbox_inches="tight")
         fig.savefig(f"{out_dir_2yr}/dengue_forecast_zone_{zone}.pdf", bbox_inches="tight")
+        fig.savefig(f"{out_dir_2yr}/dengue_forecast_zone_{zone}.eps", format="eps", bbox_inches="tight")
         plt.close()
 
     # 6-Panel Combined 2-Year Plot
@@ -144,11 +141,16 @@ def generate_visualizations_2years():
         lower_fut = (df_fut["incidence_rate"] - df_fut["sigma"]).clip(0)
         upper_fut = df_fut["incidence_rate"] + df_fut["sigma"]
         
-        ax.plot(df_fut["date"], lower_fut, color="#ff7f0e", lw=0.8, linestyle="--")
-        ax.plot(df_fut["date"], upper_fut, color="#ff7f0e", lw=0.8, linestyle="--")
+        # Smooth shaded ribbon WITHOUT outline lines
+        ax.fill_between(df_fut["date"], lower_fut, upper_fut, color="#ffe5d0", alpha=0.6, edgecolor="none", label="Forecast +/-1sigma")
         
         ax.axvline(x=pd.to_datetime("2024-06-02"), color="gray", linestyle=":", lw=1.0)
         ax.axvline(x=pd.to_datetime("2025-12-31"), color="red", linestyle="--", lw=1.0)
+        
+        for spine in ax.spines.values():
+            spine.set_linewidth(2.0)
+            spine.set_color("#000000")
+            
         ax.grid(False)
         ax.text(0.03, 0.90, zone_names[z], transform=ax.transAxes, fontsize=9.5, fontweight="bold", color="#333333")
         ax.set_ylabel("Incidence Rate (per 100k)", fontsize=8.5, color="#333333")
@@ -158,28 +160,11 @@ def generate_visualizations_2years():
         ax.legend(loc="upper right", frameon=False, fontsize=8)
 
     plt.tight_layout()
-    # Save EPS vector without fill_between
-    plt.savefig("figures/dengue_forecast_combined_zones_2years.eps", format="eps", bbox_inches="tight")
-    plt.savefig(f"{out_dir_2yr}/dengue_forecast_combined_zones_2years.eps", format="eps", bbox_inches="tight")
-
-    # Add fill_between for PNG and PDF exports
-    for i, z in enumerate(range(1, 7)):
-        ax = axes[i]
-        z_fore = df_forecast[df_forecast["climate_zone"] == float(z)].sort_values("date").copy()
-        df_val_sub = z_fore[z_fore["date"] <= pd.to_datetime("2025-12-28")].copy()
-        df_fut_sub = z_fore[(z_fore["date"] >= pd.to_datetime("2026-01-04")) & (z_fore["date"] <= pd.to_datetime("2026-12-27"))].copy()
-        last_buf_dt = df_val_sub["date"].iloc[-1]
-        last_buf_inc = df_val_sub["incidence_rate"].iloc[-1]
-        anchor_fut = pd.DataFrame([{"date": last_buf_dt, "incidence_rate": last_buf_inc, "sigma": df_fut_sub["sigma"].iloc[0]}])
-        df_fut = pd.concat([anchor_fut, df_fut_sub], ignore_index=True)
-        lower_fut = (df_fut["incidence_rate"] - df_fut["sigma"]).clip(0)
-        upper_fut = df_fut["incidence_rate"] + df_fut["sigma"]
-        ax.fill_between(df_fut["date"], lower_fut, upper_fut, color="#ff7f0e", alpha=0.25, label="Forecast ±1σ Band")
-        ax.legend(loc="upper right", frameon=False, fontsize=8)
-
     plt.savefig("figures/dengue_forecast_combined_zones_2years.png", dpi=600, bbox_inches="tight")
     plt.savefig(f"{out_dir_2yr}/dengue_forecast_combined_zones_2years.png", dpi=600, bbox_inches="tight")
     plt.savefig(f"{out_dir_2yr}/dengue_forecast_combined_zones_2years.pdf", bbox_inches="tight")
+    plt.savefig("figures/dengue_forecast_combined_zones_2years.eps", format="eps", bbox_inches="tight")
+    plt.savefig(f"{out_dir_2yr}/dengue_forecast_combined_zones_2years.eps", format="eps", bbox_inches="tight")
     plt.close()
 
     print("2-Year Visualizations generated successfully!")
