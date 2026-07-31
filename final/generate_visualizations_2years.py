@@ -11,7 +11,14 @@ warnings.filterwarnings("ignore")
 plt.rcParams.update({
     "font.family": "serif",
     "font.serif": ["Times New Roman", "Times", "DejaVu Serif"],
-    "figure.dpi": 600
+    "figure.dpi": 600,
+    "savefig.dpi": 600,
+    "axes.linewidth": 2.2,
+    "axes.edgecolor": "#000000",
+    "xtick.major.width": 1.8,
+    "ytick.major.width": 1.8,
+    "xtick.major.size": 6,
+    "ytick.major.size": 6
 })
 
 def generate_visualizations_2years():
