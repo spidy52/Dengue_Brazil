@@ -82,8 +82,8 @@ def generate_visualizations():
         lower_fut = (df_fut["incidence_rate"] - df_fut["sigma"]).clip(0)
         upper_fut = df_fut["incidence_rate"] + df_fut["sigma"]
         
-        # Smooth shaded ribbon WITHOUT outline lines
-        ax.fill_between(df_fut["date"], lower_fut, upper_fut, color="#ffe5d0", alpha=0.6, edgecolor="none", label="Forecast +/-1sigma")
+        # Darker smooth shaded ribbon WITHOUT outline lines
+        ax.fill_between(df_fut["date"], lower_fut, upper_fut, color="#ff7f0e", alpha=0.35, edgecolor="none", label="Forecast +/-1sigma")
         
         ax.axvline(x=pd.to_datetime("2024-06-02"), color="gray", linestyle=":", lw=1.2)
         ax.axvline(x=pd.to_datetime("2025-12-31"), color="red", linestyle="--", lw=1.2)
@@ -141,8 +141,8 @@ def generate_visualizations():
         lower_fut = (df_fut["incidence_rate"] - df_fut["sigma"]).clip(0)
         upper_fut = df_fut["incidence_rate"] + df_fut["sigma"]
         
-        # Smooth shaded ribbon WITHOUT outline lines
-        ax.fill_between(df_fut["date"], lower_fut, upper_fut, color="#ffe5d0", alpha=0.6, edgecolor="none", label="Forecast +/-1sigma")
+        # Darker smooth shaded ribbon WITHOUT outline lines
+        ax.fill_between(df_fut["date"], lower_fut, upper_fut, color="#ff7f0e", alpha=0.35, edgecolor="none", label="Forecast +/-1sigma")
         
         ax.axvline(x=pd.to_datetime("2024-06-02"), color="gray", linestyle=":", lw=1.0)
         ax.axvline(x=pd.to_datetime("2025-12-31"), color="red", linestyle="--", lw=1.0)

@@ -88,11 +88,11 @@ def generate_climate_zones_map():
             world_gdf = gpd.read_file(r)
             
         world_gdf.plot(ax=ax_world, color="#e5e7eb", edgecolor="#ffffff", lw=0.5)
-        brazil_world = world_gdf[world_gdf["ADMIN"] == "Brazil"]
-        if not brazil_world.empty:
-            brazil_world.plot(ax=ax_world, color="#3e9668", edgecolor="none")
-    except Exception:
-        ax_world.text(0.5, 0.5, "World Map Inset", ha="center", va="center", fontsize=12)
+    except Exception as e:
+        print("World map fetch notice:", e)
+        
+    # Always highlight Brazil in vibrant green (#3e9668) on the world map inset
+    gdf.plot(ax=ax_world, color="#3e9668", edgecolor="#2d724e", lw=0.4, zorder=5)
         
     ax_world.set_xlim(-170, 180)
     ax_world.set_ylim(-60, 85)
