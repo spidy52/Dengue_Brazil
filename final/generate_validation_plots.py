@@ -218,7 +218,7 @@ def generate_validation_plots():
         ax.plot(z_data["date"], pred, label="Model Prediction", color="#ff7f0e", linestyle="--", linewidth=1.8)
         
         ax.grid(False)
-        ax.text(0.50, 0.94, f"Zone {zone_id}", transform=ax.transAxes, fontsize=10.5, fontweight="bold", ha="center", va="top", color="#000000")
+        ax.text(0.03, 0.90, f"Zone {zone_id}", transform=ax.transAxes, fontsize=9.5, fontweight="bold", ha="left", color="#333333")
         ax.set_ylabel("Incidence Rate (per 100k)", fontsize=8.5, color="#333333")
         if i >= 3:
             ax.set_xlabel("Date", fontsize=9.5, fontweight="bold", color="#333333")
@@ -228,7 +228,7 @@ def generate_validation_plots():
             spine.set_linewidth(2.0)
             
         ax.tick_params(colors="#333333", labelsize=8.5, width=1.5, length=4)
-        ax.legend(loc="upper center", bbox_to_anchor=(0.50, 0.86), frameon=False, fontsize=8, ncol=2)
+        ax.legend(loc="upper right", frameon=False, fontsize=8)
 
     plt.tight_layout()
     for d in output_dirs:

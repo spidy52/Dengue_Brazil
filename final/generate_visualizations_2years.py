@@ -182,7 +182,7 @@ def generate_visualizations_2years():
             spine.set_color("#000000")
             
         ax.grid(False)
-        ax.text(0.50, 0.94, zone_names[z], transform=ax.transAxes, fontsize=10.5, fontweight="bold", ha="center", va="top", color="#000000")
+        ax.text(0.03, 0.90, zone_names[z], transform=ax.transAxes, fontsize=9.5, fontweight="bold", ha="left", color="#333333")
         ax.set_ylabel("Incidence Rate (per 100k)", fontsize=8.5, color="#333333")
         if i >= 3:
             ax.set_xlabel("Date", fontsize=9.5, fontweight="bold", color="#333333")
