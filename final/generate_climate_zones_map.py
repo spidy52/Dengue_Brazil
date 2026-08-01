@@ -50,6 +50,8 @@ def generate_climate_zones_map():
         return
 
     gdf = gpd.read_file(geojson_path)
+    # Simplify Brazil state polygon vertices to optimize EPS vector file size while maintaining crisp borders
+    gdf["geometry"] = gdf["geometry"].simplify(tolerance=0.01, preserve_topology=True)
     
     # Exact 6 Climate Zones color scheme matching Image 2
     zone_colors = {
@@ -87,6 +89,8 @@ def generate_climate_zones_map():
         with urllib.request.urlopen(world_url, context=ctx, timeout=20) as r:
             world_gdf = gpd.read_file(r)
             
+        # Simplify world map polygons for lightweight EPS export
+        world_gdf["geometry"] = world_gdf["geometry"].simplify(tolerance=0.08, preserve_topology=True)
         world_gdf.plot(ax=ax_world, color="#e5e7eb", edgecolor="#ffffff", lw=0.5)
     except Exception as e:
         print("World map fetch notice:", e)
