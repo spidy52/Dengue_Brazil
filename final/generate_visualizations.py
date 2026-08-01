@@ -151,9 +151,8 @@ def generate_visualizations():
     fig, axes = plt.subplots(2, 3, figsize=(18, 8.5), facecolor="white", sharex=True)
     axes = axes.flatten()
     zone_names = {
-        1: "Zone 1 (Equatorial Amazon)", 2: "Zone 2 (Cerrado North)",
-        3: "Zone 3 (Semi-Arid NE)", 4: "Zone 4 (Central-West)",
-        5: "Zone 5 (Southeast Core)", 6: "Zone 6 (Southern Temperate)"
+        1: "Zone 1", 2: "Zone 2", 3: "Zone 3",
+        4: "Zone 4", 5: "Zone 5", 6: "Zone 6"
     }
     
     for i, z in enumerate(range(1, 7)):
@@ -189,7 +188,7 @@ def generate_visualizations():
             spine.set_color("#000000")
             
         ax.grid(False)
-        ax.text(0.03, 0.90, zone_names[z], transform=ax.transAxes, fontsize=9.5, fontweight="bold", color="#333333")
+        ax.text(0.50, 0.94, zone_names[z], transform=ax.transAxes, fontsize=10.5, fontweight="bold", ha="center", va="top", color="#000000")
         ax.set_ylabel("Incidence Rate (per 100k)", fontsize=8.5, color="#333333")
         if i >= 3:
             ax.set_xlabel("Date", fontsize=9.5, fontweight="bold", color="#333333")

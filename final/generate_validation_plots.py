@@ -218,7 +218,7 @@ def generate_validation_plots():
         ax.plot(z_data["date"], pred, label="Model Prediction", color="#ff7f0e", linestyle="--", linewidth=1.8)
         
         ax.grid(False)
-        ax.text(0.03, 0.90, ZONE_NAMES[zone_id], transform=ax.transAxes, fontsize=9.5, fontweight="bold", color="#333333")
+        ax.text(0.50, 0.94, f"Zone {zone_id}", transform=ax.transAxes, fontsize=10.5, fontweight="bold", ha="center", va="top", color="#000000")
         ax.set_ylabel("Incidence Rate (per 100k)", fontsize=8.5, color="#333333")
         if i >= 3:
             ax.set_xlabel("Date", fontsize=9.5, fontweight="bold", color="#333333")
@@ -228,13 +228,57 @@ def generate_validation_plots():
             spine.set_linewidth(2.0)
             
         ax.tick_params(colors="#333333", labelsize=8.5, width=1.5, length=4)
-        ax.legend(loc="upper center", frameon=False, fontsize=8, ncol=2)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.50, 0.86), frameon=False, fontsize=8, ncol=2)
 
     plt.tight_layout()
     for d in output_dirs:
         plt.savefig(os.path.join(d, "dengue_validation_combined_zones.png"), dpi=600, bbox_inches="tight")
         plt.savefig(os.path.join(d, "dengue_validation_combined_zones.eps"), format="eps", bbox_inches="tight")
         plt.savefig(os.path.join(d, "dengue_validation_combined_zones.pdf"), bbox_inches="tight")
+    plt.close()
+
+    # 2b. State-Level National Aggregate Validation Plot (Thick Axes & Centered Legend)
+    state_weekly = df_val.groupby("date").apply(
+        lambda g: pd.Series({
+            "cases": g["cases"].sum() / 1000.0,
+            "pred_cases": g["pred_cases"].sum() / 1000.0
+        })
+    ).reset_index().sort_values("date")
+    
+    act_st = state_weekly["cases"].values
+    pred_st = state_weekly["pred_cases"].values
+    
+    r2_st = 1 - np.sum((act_st - pred_st)**2) / np.sum((act_st - np.mean(act_st))**2)
+    pearson_st = np.corrcoef(act_st, pred_st)[0, 1]
+    
+    fig, ax = plt.subplots(figsize=(11, 5), facecolor="white")
+    ax.plot(state_weekly["date"], act_st, label="Actual Ground Truth", color="#1f77b4", linewidth=2.0)
+    ax.plot(state_weekly["date"], pred_st, label="LightGBM Model Prediction", color="#ff7f0e", linestyle="--", linewidth=2.0)
+    
+    stats_text = f"State-Level $R^2 = {r2_st:.4f}$\nPearson $r = {pearson_st:.4f}$"
+    ax.text(0.04, 0.88, stats_text, transform=ax.transAxes, fontsize=10.5, fontweight="bold",
+            bbox=dict(boxstyle="round,pad=0.5", facecolor="#ffffff", edgecolor="#aaaaaa", alpha=0.9), zorder=10)
+    
+    ax.grid(False)
+    ax.set_xlabel("Validation Date (2023–2024 Holdout Set)", fontsize=11, fontweight="bold", fontstyle="italic", labelpad=8)
+    ax.set_ylabel("Weekly Dengue Cases (in Thousands)", fontsize=11, fontweight="bold", fontstyle="italic", labelpad=8)
+    
+    # Thick black box axes
+    for spine in ax.spines.values():
+        spine.set_color("#000000")
+        spine.set_linewidth(2.0)
+        
+    ax.tick_params(colors="#000000", labelsize=10, width=1.5, length=5)
+    # Legend centered in upper middle
+    ax.legend(frameon=False, loc="upper center", fontsize=10, ncol=2)
+    
+    plt.tight_layout()
+    for d in output_dirs:
+        plt.savefig(os.path.join(d, "dengue_validation_state_aggregate.png"), dpi=600, bbox_inches="tight")
+        plt.savefig(os.path.join(d, "dengue_validation_state_aggregate.pdf"), bbox_inches="tight")
+        plt.savefig(os.path.join(d, "dengue_validation_state_aggregate.eps"), format="eps", bbox_inches="tight")
+        plt.savefig(os.path.join(d, "dengue_validation_actual_vs_predicted.png"), dpi=600, bbox_inches="tight")
+        plt.savefig(os.path.join(d, "dengue_validation_actual_vs_predicted.eps"), format="eps", bbox_inches="tight")
     plt.close()
 
     # 3. Outbreak ROC-AUC Curve
