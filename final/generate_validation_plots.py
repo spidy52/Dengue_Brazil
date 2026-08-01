@@ -179,28 +179,32 @@ def generate_validation_plots():
         ax.plot(z_data["date"], pred, label="Model Prediction", color="#ff7f0e", linestyle="--", linewidth=2.0)
         
         ax.grid(False)
-        ax.set_xlabel("Date", fontsize=10, color="#333333", labelpad=8)
-        ax.set_ylabel("Incidence Rate (per 100k)", fontsize=10, color="#333333", labelpad=8)
+        ax.set_xlabel("Date", fontsize=11, fontweight="bold", color="#000000", labelpad=8)
+        ax.set_ylabel("Incidence Rate (per 100k)", fontsize=11, fontweight="bold", color="#000000", labelpad=8)
         
+        # Thick black box axes
         for spine in ax.spines.values():
-            spine.set_color("#dddddd")
-            spine.set_linewidth(1.0)
+            spine.set_color("#000000")
+            spine.set_linewidth(2.0)
             
-        ax.tick_params(colors="#333333", labelsize=9)
-        ax.legend(frameon=False, loc="upper right", fontsize=9)
+        ax.tick_params(colors="#000000", labelsize=10, width=1.5, length=5)
+        # Place legend in the upper middle of the plot with 2 columns
+        ax.legend(frameon=False, loc="upper center", fontsize=10, ncol=2)
         
         plt.tight_layout()
         
         for d in output_dirs:
             png_path = os.path.join(d, f"dengue_validation_zone_{zone_id}.png")
             eps_path = os.path.join(d, f"dengue_validation_zone_{zone_id}.eps")
+            pdf_path = os.path.join(d, f"dengue_validation_zone_{zone_id}.pdf")
             plt.savefig(png_path, dpi=600, bbox_inches="tight")
             plt.savefig(eps_path, format="eps", bbox_inches="tight")
+            plt.savefig(pdf_path, bbox_inches="tight")
             
         plt.close()
 
-    # 2. Generate 6-Panel Combined Zone Validation Plot (Pure Dynamic Climate Mode)
-    fig, axes = plt.subplots(3, 2, figsize=(15, 11), facecolor="white", sharex=True)
+    # 2. Generate 6-Panel Combined Zone Validation Plot (Pure Dynamic Climate Mode, 2x3 Grid)
+    fig, axes = plt.subplots(2, 3, figsize=(18, 8.5), facecolor="white", sharex=True)
     axes = axes.flatten()
 
     for i, zone_id in enumerate(range(1, 7)):
@@ -216,20 +220,21 @@ def generate_validation_plots():
         ax.grid(False)
         ax.text(0.03, 0.90, ZONE_NAMES[zone_id], transform=ax.transAxes, fontsize=9.5, fontweight="bold", color="#333333")
         ax.set_ylabel("Incidence Rate (per 100k)", fontsize=8.5, color="#333333")
-        if i >= 4:
-            ax.set_xlabel("Date", fontsize=9, color="#333333")
+        if i >= 3:
+            ax.set_xlabel("Date", fontsize=9.5, fontweight="bold", color="#333333")
             
         for spine in ax.spines.values():
-            spine.set_color("#dddddd")
-            spine.set_linewidth(1.0)
+            spine.set_color("#000000")
+            spine.set_linewidth(2.0)
             
-        ax.tick_params(colors="#333333", labelsize=8.5)
-        ax.legend(loc="upper right", frameon=False, fontsize=8)
+        ax.tick_params(colors="#333333", labelsize=8.5, width=1.5, length=4)
+        ax.legend(loc="upper center", frameon=False, fontsize=8, ncol=2)
 
     plt.tight_layout()
     for d in output_dirs:
         plt.savefig(os.path.join(d, "dengue_validation_combined_zones.png"), dpi=600, bbox_inches="tight")
         plt.savefig(os.path.join(d, "dengue_validation_combined_zones.eps"), format="eps", bbox_inches="tight")
+        plt.savefig(os.path.join(d, "dengue_validation_combined_zones.pdf"), bbox_inches="tight")
     plt.close()
 
     # 3. Outbreak ROC-AUC Curve
